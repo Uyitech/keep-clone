@@ -1,13 +1,54 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.logoContainer {
+    display: flex;
+    padding-right: 53px;
+    align-items: center;
+    justify-content: stretch;
 }
+
+@media only screen and (max-width: 1200px) {
+    .logoContainer {
+        display: flex;
+        padding-right: 5px;
+    }
+}
+
+.logo {
+    width: 43px;
+    height: 40px;
+}
+
+.list {
+    margin: 0;
+    gap: 10px;
+    padding: 0;
+    display: flex;
+    padding-top: 8px;
+    list-style: none;
+    position: relative;
+    padding-bottom: 8px;
+    flex-direction: column;
+}
+
+/* .listItem {
+    width: 100%;
+    display: flex;
+    display: block;
+    text-align: left;
+    position: relative;
+    align-items: center;
+    background: #41331c;
+    text-decoration: none;
+    box-sizing: border-box;
+    justify-content: flex-start;
+    -webkit-text-decoration: none;
+    border-radius: 0% 50px 50px 0%;
+} */

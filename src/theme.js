@@ -1,114 +1,4 @@
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
-// import { red, amber, grey } from "@mui/material/colors";
-
-// A custom theme for this app
-// const lightwTheme = createTheme({
-//     type: "light",
-//     palette: {
-//         primary: {
-//             main: "#FFF"
-//         },
-//         secondary: {
-//             main: amber[500],
-//             light: "#feefc3"
-//         },
-//         error: {
-//             main: red.A400
-//         },
-//         background: {
-//             default: "#FFF",
-//             highlight: "#F1F3F4"
-//         }
-//     },
-//     typography: {
-//         overline: {
-//             fontWeight: 500,
-//             fontSize: "0.7rem"
-//         }
-//     },
-//     shape: {
-//         borderRadius: "0.5rem"
-//     },
-//     zIndex: {
-//         appBar: 1200,
-//         drawer: 1100
-//     },
-//     mixins: {
-//         drawer: {
-//             minWidth: 280
-//         }
-//     },
-//     custom: {
-//         palette: {
-//             iconColor: "#5f6368",
-//             itemBorderColor: "#DDDDDD",
-//             iconHighlight: grey[900],
-//             notesCheckbox: grey[700],
-//             profilePopColor: "#FFF",
-//             noteBackground: {
-//                 default: "#0000",
-//                 red: "#F28B82",
-//                 orange: "#FBBC04",
-//                 yellow: "#FFF475",
-//                 green: "#CCFF90",
-//                 cyan: "#A7FFEB",
-//                 lightblue: "#CBF0F8",
-//                 darkblue: "#AECBFA",
-//                 purple: "#D7AEFB",
-//                 pink: "#FDCFE8",
-//                 brown: "#E6C9A8",
-//                 grey: "#E8EAED"
-//             },
-//             noteColorCheck: "#0007",
-//             labelBackground: "#0002"
-//         }
-//     }
-// });
-
-// const darkwTheme = createTheme({
-//     type: "dark",
-//     palette: {
-//         primary: {
-//             main: "#202124"
-//         },
-//         secondary1: {
-//             main: amber[500],
-//             light: "#41331C"
-//         },
-//         error: {
-//             main: red.A400
-//         },
-//         background: {
-//             default: "#202124",
-//             highlight: "#535456"
-//         },
-//         text: {
-//             primary: "#E8EAED",
-//             secondary: "#FFFFFFDE"
-//         }
-//     },
-//     typography: {
-//         overline: {
-//             fontWeight: 500,
-//             fontSize: "0.7rem"
-//         }
-//     },
-//     shape: {
-//         borderRadius: "0.5rem"
-//     },
-//     zIndex: {
-//         appBar: 1200,
-//         drawer: 1100
-//     },
-//     mixins: {
-//         drawer: {
-//             minWidth: 280
-//         }
-//     },
-//     
-// });
-
-
 
 const darkTheme = createTheme({
     palette: {
@@ -124,27 +14,32 @@ const darkTheme = createTheme({
         },
         text: {
             default: "#f1f3f4",
-        }
-    },
-    custom: {
-        palette: {
-            iconColor: "#949596",
-            itemBorderColor: "#5F6368",
-            profilePopColor: "#2D2E30",
-            noteBackground: {
-                default: "#0000",
-                red: "#5C2B29",
-                orange: "#614A19",
-                yellow: "#635D18",
-                green: "#345920",
-                cyan: "#16504B",
-                lightblue: "#2D555E",
-                darkblue: "#1E3A5F",
-                purple: "#42275E",
-                pink: "#5B2245",
-                brown: "#442F19",
-                grey: "#3C3F43"
-            }
+        },
+        border: {
+            default: "#5f6368",
+            shadow: "0 1px 2px 0 rgb(0 0 0 / 60%), 0 2px 6px 2px rgb(0 0 0 / 30%)"
+        },
+        icon: {
+            light: "#8d8d8d"
+        },
+        custom: {
+            iconColor: "#fff",
+            iconOpacity: "0.75",
+            border: "#fff"
+        },
+        noteBg: {
+            default: "#0000",
+            red: "#5C2B29",
+            orange: "#614A19",
+            yellow: "#635D18",
+            green: "#345920",
+            cyan: "#16504B",
+            lightblue: "#2D555E",
+            darkblue: "#1E3A5F",
+            purple: "#42275E",
+            pink: "#5B2245",
+            brown: "#442F19",
+            grey: "#3C3F43"
         }
     }
 });
@@ -163,27 +58,32 @@ const lightTheme = createTheme({
         },
         text: {
             default: "#000000a3",
-        }
-    },
-    custom: {
-        palette: {
-            iconColor: "#5f6368",
-            itemBorderColor: "#DDDDDD",
-            profilePopColor: "#FFF",
-            noteBackground: {
-                default: "#0000",
-                red: "#F28B82",
-                orange: "#FBBC04",
-                yellow: "#FFF475",
-                green: "#CCFF90",
-                cyan: "#A7FFEB",
-                lightblue: "#CBF0F8",
-                darkblue: "#AECBFA",
-                purple: "#D7AEFB",
-                pink: "#FDCFE8",
-                brown: "#E6C9A8",
-                grey: "#E8EAED"
-            }
+        },
+        border: {
+            default: "#e0e0e0",
+            shadow: "0 1px 2px 0 rgb(60 64 67 / 30%), 0 2px 6px 2px rgb(60 64 67 / 15%)"
+        },
+        icon: {
+            light: "#dddddd"
+        },
+        custom: {
+            iconColor: "#202124",
+            iconOpacity: "0.75",
+            border: "#000"
+        },
+        noteBg: {
+            default: "#0000",
+            red: "#F28B82",
+            orange: "#FBBC04",
+            yellow: "#FFF475",
+            green: "#CCFF90",
+            cyan: "#A7FFEB",
+            lightblue: "#CBF0F8",
+            darkblue: "#AECBFA",
+            purple: "#D7AEFB",
+            pink: "#FDCFE8",
+            brown: "#E6C9A8",
+            grey: "#E8EAED"
         }
     }
 });

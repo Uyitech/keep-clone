@@ -7,20 +7,6 @@
     font-family: 'Roboto', sans-serif;
 }
 
-.logoContainer {
-    display: flex;
-    padding-right: 53px;
-    align-items: center;
-    justify-content: stretch;
-}
-
-@media only screen and (max-width: 1200px) {
-    .logoContainer {
-        display: flex;
-        padding-right: 5px;
-    }
-}
-
 .logo {
     width: 43px;
     height: 40px;
@@ -37,18 +23,3 @@
     padding-bottom: 8px;
     flex-direction: column;
 }
-
-/* .listItem {
-    width: 100%;
-    display: flex;
-    display: block;
-    text-align: left;
-    position: relative;
-    align-items: center;
-    background: #41331c;
-    text-decoration: none;
-    box-sizing: border-box;
-    justify-content: flex-start;
-    -webkit-text-decoration: none;
-    border-radius: 0% 50px 50px 0%;
-} */

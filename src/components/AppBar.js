@@ -8,10 +8,12 @@ import {
     Box,
     Typography
 } from "@mui/material";
+import { useTheme } from '@mui/material/styles';
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import ViewAgendaOutlined from '@mui/icons-material/ViewAgendaOutlined';
+import Brightness4OutlinedIcon from '@mui/icons-material/Brightness4Outlined';
 import Brightness5OutlinedIcon from '@mui/icons-material/Brightness5Outlined';
 
 
@@ -49,7 +51,6 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
     '& .MuiInputBase-input': {
-        // padding: theme.spacing(1, 1, 1, 0),
         paddingLeft: `calc(1em + ${theme.spacing(4)})`,
         transition: theme.transitions.create('width'),
         marginRight: '20px',
@@ -63,6 +64,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 
 export default function HeaderBar({ open, handleDrawerOpen, toogleMode }) {
+    const theme = useTheme();
     const [searchBar, setSearchBar] = React.useState(true)
 
     const toogleSearchBar = () => {
@@ -75,10 +77,9 @@ export default function HeaderBar({ open, handleDrawerOpen, toogleMode }) {
                 <IconButton
                     size="large"
                     edge="start"
-                    color="inherit"
                     aria-label="open drawer"
                     onClick={handleDrawerOpen}
-                    sx={{ color: 'text.secondary' }}
+                    sx={{ color: 'text.default' }}
                 >
                     <MenuIcon />
                 </IconButton>
@@ -100,7 +101,7 @@ export default function HeaderBar({ open, handleDrawerOpen, toogleMode }) {
                         <SearchIcon className='searchBarIcon' />
                     </IconButton>
                     <IconButton size="large" sx={{ color: 'text.default' }} onClick={toogleMode}>
-                        <Brightness5OutlinedIcon />
+                        {theme.palette.mode === 'dark' ? <Brightness5OutlinedIcon /> : <Brightness4OutlinedIcon />}
                     </IconButton>
                     <IconButton size="large" sx={{ color: 'text.default' }}>
                         <ViewAgendaOutlined />
@@ -116,7 +117,7 @@ export default function HeaderBar({ open, handleDrawerOpen, toogleMode }) {
 
 function LogoContainer() {
     return (
-        <div className='logoContainer'>
+        <Box sx={{ display: 'flex', pr: { md: '53px', xs: '5px' }, alignItems: 'center' }}>
             <img className="logo" src={`../img/keep-logo.png`} alt={"logo"} />
             <Typography
                 noWrap
@@ -132,6 +133,6 @@ function LogoContainer() {
             >
                 Keep
             </Typography>
-        </div>
+        </Box>
     );
 }

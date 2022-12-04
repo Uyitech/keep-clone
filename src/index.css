@@ -23,3 +23,14 @@
     padding-bottom: 8px;
     flex-direction: column;
 }
+
+.colorCircle {
+    height: 30px;
+    width: 30px;
+    margin: auto;
+    border-radius: 50%;
+    display: inline-block;
+    border-style: solid;
+    border-color: pink;
+    border-width: 2px;
+}

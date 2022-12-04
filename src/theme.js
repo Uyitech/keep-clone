@@ -28,7 +28,7 @@ const darkTheme = createTheme({
             border: "#fff"
         },
         noteBg: {
-            default: "#0000",
+            default: "",
             red: "#5C2B29",
             orange: "#614A19",
             yellow: "#635D18",
@@ -72,7 +72,7 @@ const lightTheme = createTheme({
             border: "#000"
         },
         noteBg: {
-            default: "#0000",
+            default: "",
             red: "#F28B82",
             orange: "#FBBC04",
             yellow: "#FFF475",

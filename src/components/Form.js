@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { createTheme } from '@mui/material/styles';
+import { ThemeProvider, useTheme } from '@mui/material/styles';
 import { styled } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import Popover from '@mui/material/Popover';
@@ -23,7 +23,6 @@ const Container = styled(Box)(({ theme }) => ({
     flexDirection: 'column',
     boxShadow: `${theme.palette.border.shadow}`,
     borderColor: `${theme.palette.border.default}`,
-    backgroundColor: `${theme.palette.noteBg.default}`,
 }));
 
 const StyledButton = styled(IconButton)(({ theme }) => ({
@@ -56,27 +55,31 @@ const StyledBox = styled(Box)(({ theme }) => ({
     width: 32,
     height: 32,
     borderRadius: 50,
+    cursor: 'pointer',
     border: '2px solid',
     '&:hover': {
         border: '2px solid',
-        borderColor: `${theme.palette.custom.border}`,
     },
 }));
 
 function Form() {
-    const theme = createTheme();
+    const theme = useTheme();
+    const [color, setColor] = useState("");
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [showTextField, setShowTextField] = useState(false);
+
 
     const containerRef = useRef();
 
     const handleClickAway = () => {
+        setColor("")
         setShowTextField(false);
         containerRef.current.style.minheight = '30px'
     }
 
     const onClose = () => {
         setShowTextField(false);
+        setColor("")
     }
 
     const onTextChange = () => {
@@ -96,27 +99,17 @@ function Form() {
         setAnchorEl(null);
     };
 
-    const listColor = [
-        { id: 1, bg: "#0000" },
-        { id: 2, bg: "#5C2B29" },
-        { id: 3, bg: "#614A19" },
-        { id: 4, bg: "#635D18" },
-        { id: 5, bg: "#345920" },
-        { id: 6, bg: "#16504B" },
-        { id: 7, bg: "#2D555E" },
-        { id: 8, bg: "#1E3A5F" },
-        { id: 9, bg: "#42275E" },
-        { id: 10, bg: "#5B2245" },
-        { id: 11, bg: "#442F19" },
-        { id: 12, bg: "#3C3F43" },
-    ]
+    const onSelectColor = color => {
+        setColor(color);
+    };
 
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
 
+
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
-            <Container ref={containerRef}>
+            <Container ref={containerRef} style={{ background: (theme.palette.noteBg[color]), borderColor: (theme.palette.noteBg[color]) }}>
                 {showTextField &&
                     <TextField
                         name='heading'
@@ -181,17 +174,20 @@ function Form() {
                                 horizontal: 'left',
                             }}
                         >
-
-                            <Box sx={{ p: 2, display: 'flex', gap: theme.spacing(0.5), }}>
-                                {
-                                    listColor.map(background => (
-                                        < StyledBox
-                                            key={background.id}
-                                            sx={{ background: background.bg, borderColor: background.bg }}
+                            <ThemeProvider theme={theme}>
+                                <Box sx={{ p: 2, display: 'flex', gap: theme.spacing(0.5), }}>
+                                    {Object.keys(theme.palette.noteBg).map((background) => (
+                                        <StyledBox
+                                            key={background}
+                                            onClick={() => onSelectColor(background)}
+                                            sx={{
+                                                background: (theme.palette.noteBg[background]),
+                                                borderColor: (theme.palette.noteBg[background])
+                                            }}
                                         />
-                                    ))
-                                }
-                            </Box>
+                                    ))}
+                                </Box>
+                            </ThemeProvider>
                         </Popover>
                     </>
                 }

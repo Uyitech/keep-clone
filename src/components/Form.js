@@ -2,9 +2,11 @@ import React, { useState, useRef } from 'react';
 import { ThemeProvider, useTheme } from '@mui/material/styles';
 import { styled } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
+import SaveIcon from '@mui/icons-material/Save';
+import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
-import { Popover, CardMedia } from '@mui/material';
 import CardActions from '@mui/material/CardActions';
+import { Popover, CardMedia, Stack } from '@mui/material';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import PaletteOutlinedIcon from '@mui/icons-material/PaletteOutlined';
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
@@ -38,24 +40,6 @@ const StyledButton = styled(IconButton)(({ theme }) => ({
     opacity: `${theme.palette.custom.iconOpacity}`,
 }));
 
-const Close = styled(Button)(({ theme }) => ({
-    height: '36px',
-    fontWeight: '500',
-    overflow: 'hidden',
-    padding: '8px 24px',
-    borderRadius: '4px',
-    whiteSpace: 'nowrap',
-    fontSize: '0.875rem',
-    lineHeight: '1.25rem',
-    textOverflow: 'ellipsis',
-    textTransform: 'capitalize',
-    letterSpacing: '0.0178571em',
-    color: `${theme.palette.text.default}`,
-    '&:hover': {
-        backgroundColor: `${theme.palette.searchBar.light}`,
-    },
-}));
-
 const StyledBox = styled(Box)(({ theme }) => ({
     width: 32,
     height: 32,
@@ -69,7 +53,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
 
 function Form() {
     const theme = useTheme();
-    const [file, setFile] = useState();
+    const [file, setFile] = useState("");
     const [color, setColor] = useState("");
     const [title, setTitle] = useState("");
     const [image, setImage] = useState([]);
@@ -82,17 +66,22 @@ function Form() {
     const inputRef = useRef(null);
 
     const handleClickAway = () => {
-        setColor("")
         setFile("")
+        setColor("")
         setShowTextField(false);
         containerRef.current.style.minheight = '30px'
+    }
+
+    const closeForm = () => {
+        handleClickAway();
+        console.log("close")
     }
 
     const fileUpload = () => {
         inputRef.current.click();
     };
 
-    const handleFileChange = event => {
+    const handleFileChange = (event) => {
         setImage(event.target.files[0]);
         setFile(URL.createObjectURL(event.target.files[0]));
     };
@@ -111,13 +100,13 @@ function Form() {
             async () => {
                 var imgUrl = await getDownloadURL(uploadTask.snapshot.ref);
                 try {
-                    addDoc(collection(db, "notes"), {
+                    const docRef = await addDoc(collection(db, "notes"), {
                         title: title,
                         content: content,
                         image: imgUrl,
                         time: serverTimestamp(),
                     });
-                    console.log("Document written with ID: ", id)
+                    console.log("Document written with ID: ", docRef.id);
                 } catch (e) {
                     console.error("Error adding document: ", e);
                 }
@@ -144,7 +133,7 @@ function Form() {
         setAnchorEl(null);
     };
 
-    const onSelectColor = ({ color }) => {
+    const onSelectColor = color => {
         setColor(color);
     };
 
@@ -181,7 +170,7 @@ function Form() {
                 />
                 {showTextField &&
                     <>
-                        <CardActions disableSpacing sx={{ flex: '1 0 auto', marginTop: '5px', padding: '0px 15px 5.5px 15px' }} >
+                        <CardActions disableSpacing sx={{ flex: '1 0 auto', marginTop: '5px', padding: '0px 15px 7px 15px' }} >
                             <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
                                 <Tooltip title="Background options" arrow followCursor>
                                     <StyledButton size="small" onClick={handleClick}>
@@ -215,9 +204,36 @@ function Form() {
 
                             <Box sx={{ flexGrow: 1 }} />
 
-                            <Close size="small" onClick={addNote}>
-                                Close
-                            </Close>
+                            <Stack spacing={1.3} direction="row">
+                                <Button
+                                    onClick={addNote}
+                                    variant="contained"
+                                    sx={{
+                                        color: `${theme.palette.text.default}`,
+                                        background: `${theme.palette.searchBar.light}`,
+                                        '&:hover': {
+                                            background: `${theme.palette.searchBar.light}`
+                                        }
+                                    }}
+                                >
+                                    <SaveIcon />
+                                </Button>
+
+                                <Button
+                                    variant="outlined"
+                                    onClick={closeForm}
+                                    sx={{
+                                        color: `${theme.palette.text.default}`,
+                                        borderColor: `${theme.palette.searchBar.light}`,
+                                        '&:hover': {
+                                            background: `${theme.palette.searchBar.light}`,
+                                            borderColor: `${theme.palette.searchBar.light}`,
+                                        }
+                                    }}
+                                >
+                                    <CloseIcon />
+                                </Button>
+                            </Stack>
                         </CardActions>
 
                         <Popover

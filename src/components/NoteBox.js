@@ -5,7 +5,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import { Card, CardContent, CardActions, CardMedia, Typography } from '@mui/material';
-import { doc, collection, getDocs, orderBy, query, deleteDoc, onSnapshot } from "firebase/firestore";
+import { doc, collection, orderBy, query, deleteDoc, onSnapshot } from "firebase/firestore";
 import { ArchiveOutlined as Archive, DeleteOutlineOutlined as Delete } from '@mui/icons-material';
 
 
@@ -49,14 +49,14 @@ const NoteBox = () => {
     const [note, setNote] = useState([])
 
     const fetchPost = () => {
-        const collRef = collection(db, "notes");
-        const unSubs = onSnapshot(collRef, (querySnapshot) => {
+        const collRef = (query(collection(db, "notes"), orderBy("time", "desc")));
+        const unsub = onSnapshot(collRef, (querySnapshot) => {
             const newData = querySnapshot.docs.map((doc) => {
                 return { ...doc.data(), id: doc.id }
             });
             setNote(newData);
         })
-        return unSubs;
+        return unsub;
     }
 
     useEffect(() => {
@@ -70,8 +70,6 @@ const NoteBox = () => {
             }).catch((error) => {
                 console.error("Error removing document: ", error);
             });
-        // console.log(note)
-        // console.log(doc(db, "notes", notes))
     }
 
 
@@ -84,7 +82,7 @@ const NoteBox = () => {
                             <CardMedia image={notes.image} component="img" alt={notes.image} />
                             <Title>{notes.title}</Title>
                             <Content>{notes.content}</Content>
-                            {/* <Typography>{notes.time}</Typography> */}
+                            {/* <Typography>{notes.time.toDate().toDateString()}</Typography> */}
                         </CardContent>
                         <CardActions>
                             <IconButton>

@@ -2,13 +2,18 @@ import React, { useState, useRef } from 'react';
 import { ThemeProvider, useTheme } from '@mui/material/styles';
 import { styled } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
-import Popover from '@mui/material/Popover';
 import IconButton from '@mui/material/IconButton';
+import { Popover, CardMedia } from '@mui/material';
 import CardActions from '@mui/material/CardActions';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import PaletteOutlinedIcon from '@mui/icons-material/PaletteOutlined';
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import { Box, TextField, ClickAwayListener, Button } from '@mui/material';
+
+import { db } from '../firebase/firebase';
+import { storage } from "../firebase/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 
 const Container = styled(Box)(({ theme }) => ({
@@ -19,7 +24,7 @@ const Container = styled(Box)(({ theme }) => ({
     borderRadius: '7px',
     borderStyle: 'solid',
     borderWidth: '1.2px',
-    padding: '5.5px 15px',
+    // padding: '5.5px 15px',
     flexDirection: 'column',
     boxShadow: `${theme.palette.border.shadow}`,
     borderColor: `${theme.palette.border.default}`,
@@ -64,26 +69,66 @@ const StyledBox = styled(Box)(({ theme }) => ({
 
 function Form() {
     const theme = useTheme();
+    const [file, setFile] = useState();
     const [color, setColor] = useState("");
+    const [title, setTitle] = useState("");
+    const [image, setImage] = useState([]);
+    const [content, setContent] = useState("");
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [showTextField, setShowTextField] = useState(false);
 
 
     const containerRef = useRef();
+    const inputRef = useRef(null);
 
     const handleClickAway = () => {
         setColor("")
+        setFile("")
         setShowTextField(false);
         containerRef.current.style.minheight = '30px'
     }
 
-    const onClose = () => {
+    const fileUpload = () => {
+        inputRef.current.click();
+    };
+
+    const handleFileChange = event => {
+        setImage(event.target.files[0]);
+        setFile(URL.createObjectURL(event.target.files[0]));
+    };
+
+    const addNote = async (e) => {
+        e.preventDefault();
+
+        const storageRef = ref(storage, `/images/${image.name}`)
+        const uploadTask = uploadBytesResumable(storageRef, image);
+
+
+        uploadTask.on(
+            "state_changed",
+            (snapshot) => { },
+            (err) => console.log(err),
+            async () => {
+                var imgUrl = await getDownloadURL(uploadTask.snapshot.ref);
+                try {
+                    addDoc(collection(db, "notes"), {
+                        title: title,
+                        content: content,
+                        image: imgUrl,
+                        time: serverTimestamp(),
+                    });
+                    console.log("Document written with ID: ", id)
+                } catch (e) {
+                    console.error("Error adding document: ", e);
+                }
+            }
+        )
+
         setShowTextField(false);
         setColor("")
-    }
-
-    const onTextChange = () => {
-
+        setTitle("")
+        setFile("")
+        setContent("")
     }
 
     const onTextAreaClick = () => {
@@ -99,7 +144,7 @@ function Form() {
         setAnchorEl(null);
     };
 
-    const onSelectColor = color => {
+    const onSelectColor = ({ color }) => {
         setColor(color);
     };
 
@@ -111,14 +156,17 @@ function Form() {
         <ClickAwayListener onClickAway={handleClickAway}>
             <Container ref={containerRef} style={{ background: (theme.palette.noteBg[color]), borderColor: (theme.palette.noteBg[color]) }}>
                 {showTextField &&
-                    <TextField
-                        name='heading'
-                        variant="standard"
-                        placeholder="Title"
-                        sx={{ marginBottom: '10px' }}
-                        onChange={(e) => onTextChange(e)}
-                        InputProps={{ disableUnderline: true }}
-                    />
+                    <>
+                        <CardMedia image={file} component="img" alt={file} sx={{ borderRadius: '7px 7px 0px 0px' }} />
+                        <TextField
+                            name='heading'
+                            variant="standard"
+                            placeholder="Title"
+                            sx={{ marginBottom: '5px', padding: '5.5px 15px 0px 15px', }}
+                            onChange={(e) => setTitle(e.target.value)}
+                            InputProps={{ disableUnderline: true }}
+                        />
+                    </>
                 }
                 <TextField
                     multiline
@@ -127,12 +175,13 @@ function Form() {
                     variant="standard"
                     onClick={onTextAreaClick}
                     placeholder="Take a note..."
-                    onChange={(e) => onTextChange(e)}
+                    sx={{ padding: '5.5px 15px', }}
+                    onChange={(e) => setContent(e.target.value)}
                     InputProps={{ disableUnderline: true }}
                 />
                 {showTextField &&
                     <>
-                        <CardActions disableSpacing sx={{ padding: theme.spacing(0.5, 0, 0.5, 0), flex: '1 0 auto', marginTop: '15px' }}>
+                        <CardActions disableSpacing sx={{ flex: '1 0 auto', marginTop: '5px', padding: '0px 15px 5.5px 15px' }} >
                             <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
                                 <Tooltip title="Background options" arrow followCursor>
                                     <StyledButton size="small" onClick={handleClick}>
@@ -151,15 +200,22 @@ function Form() {
 
                             <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
                                 <Tooltip title="Add Image" arrow followCursor>
-                                    <StyledButton size="small">
+                                    <StyledButton size="small" onClick={fileUpload}>
                                         <ImageOutlinedIcon fontSize="small" />
                                     </StyledButton>
                                 </Tooltip>
+                                <input
+                                    type="file"
+                                    ref={inputRef}
+                                    accept="image/*"
+                                    style={{ display: 'none' }}
+                                    onChange={handleFileChange}
+                                />
                             </Box>
 
                             <Box sx={{ flexGrow: 1 }} />
 
-                            <Close size="small" onClick={onClose}>
+                            <Close size="small" onClick={addNote}>
                                 Close
                             </Close>
                         </CardActions>

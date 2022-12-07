@@ -72,7 +72,7 @@ export default function HeaderBar({ open, handleDrawerOpen, toogleMode }) {
     }
 
     return (
-        <AppBar position="fixed" open={open} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, bgcolor: 'background.default', boxShadow: 'inset 0 -0.5px 0 0 #dadce0' }}>
+        <AppBar position="fixed" open={open} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, background: `${theme.palette.background.default}`, boxShadow: 'inset 0 -0.5px 0 0 #dadce0' }}>
             <Toolbar>
                 <IconButton
                     size="large"

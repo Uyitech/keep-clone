@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Form from './Form';
 import NoteBox from './NoteBox';
 import EmptyNotes from './EmptyNote';
-import { Box, styled } from '@mui/material';
+import { Box, styled, Container } from '@mui/material';
 
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -13,14 +13,27 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     ...theme.mixins.toolbar,
 }));
 
-function Main() {
-    // const [notes, setNotes] = useState([]);
+function Main({ note }) {
+    // console.log(note);
 
     return (
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
             <DrawerHeader />
             <Form />
-            <EmptyNotes />
+            {note?.length > 0 ?
+                <Container maxWidth={false}>
+                    <Box mt={8}>
+                        <NoteBox />
+                    </Box>
+                </Container>
+                :
+                // <EmptyNotes />
+                <Container maxWidth={false}>
+                    <Box mt={8}>
+                        <NoteBox />
+                    </Box>
+                </Container>
+            }
         </Box>
     )
 }

@@ -2,20 +2,25 @@ import React, { useState, useRef } from 'react';
 import { ThemeProvider, useTheme } from '@mui/material/styles';
 import { styled } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
-import SaveIcon from '@mui/icons-material/Save';
+import RedoIcon from '@mui/icons-material/Redo';
+import UndoIcon from '@mui/icons-material/Undo';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import CardActions from '@mui/material/CardActions';
 import { Popover, CardMedia, Stack } from '@mui/material';
+import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import PaletteOutlinedIcon from '@mui/icons-material/PaletteOutlined';
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import { Box, TextField, ClickAwayListener, Button } from '@mui/material';
+import AddAlertOutlinedIcon from '@mui/icons-material/AddAlertOutlined';
+import PersonAddAlt1OutlinedIcon from '@mui/icons-material/PersonAddAlt1Outlined';
 
 import { db } from '../firebase/firebase';
 import { storage } from "../firebase/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { textTransform } from '@mui/system';
 
 
 const Container = styled(Box)(({ theme }) => ({
@@ -38,6 +43,15 @@ const StyledButton = styled(IconButton)(({ theme }) => ({
     marginRight: 4,
     color: `${theme.palette.custom.iconColor}`,
     opacity: `${theme.palette.custom.iconOpacity}`,
+}));
+
+const NoteButton = styled(Button)(({ theme }) => ({
+    padding: '4px 15px',
+    textTransform: 'capitalize',
+    color: `${theme.palette.text.default}`,
+    '&:hover': {
+        background: `${theme.palette.searchBar.light}`
+    }
 }));
 
 const StyledBox = styled(Box)(({ theme }) => ({
@@ -146,7 +160,12 @@ function Form() {
             <Container ref={containerRef} style={{ background: (theme.palette.noteBg[color]), borderColor: (theme.palette.noteBg[color]) }}>
                 {showTextField &&
                     <>
-                        <CardMedia image={file} component="img" alt={file} sx={{ borderRadius: '7px 7px 0px 0px' }} />
+                        <CardMedia
+                            image={file}
+                            component="img"
+                            alt={file}
+                            sx={{ borderRadius: '7px 7px 0px 0px' }}
+                        />
                         <TextField
                             name='heading'
                             variant="standard"
@@ -171,18 +190,27 @@ function Form() {
                 {showTextField &&
                     <>
                         <CardActions disableSpacing sx={{ flex: '1 0 auto', marginTop: '5px', padding: '0px 15px 7px 15px' }} >
+
                             <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
-                                <Tooltip title="Background options" arrow followCursor>
-                                    <StyledButton size="small" onClick={handleClick}>
-                                        <PaletteOutlinedIcon fontSize="small" />
-                                    </StyledButton>
+                                <Tooltip title="Remind me" arrow followCursor>
+                                    <StyledButton size="small" sx={{ cursor: 'no-drop', opacity: 0.4 }}>
+                                        <AddAlertOutlinedIcon sx={{ fontSize: "19px" }} />
+                                    </StyledButton >
                                 </Tooltip>
                             </Box>
 
                             <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
-                                <Tooltip title="Archive" arrow followCursor>
-                                    <StyledButton size="small">
-                                        <ArchiveOutlinedIcon fontSize="small" />
+                                <Tooltip title="Collaborator" arrow followCursor>
+                                    <StyledButton size="small" sx={{ cursor: 'no-drop', opacity: 0.4 }}>
+                                        <PersonAddAlt1OutlinedIcon sx={{ fontSize: "19px" }} />
+                                    </StyledButton >
+                                </Tooltip>
+                            </Box>
+
+                            <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
+                                <Tooltip title="Background options" arrow followCursor>
+                                    <StyledButton size="small" onClick={handleClick}>
+                                        <PaletteOutlinedIcon sx={{ fontSize: "19px" }} />
                                     </StyledButton>
                                 </Tooltip>
                             </Box>
@@ -190,7 +218,7 @@ function Form() {
                             <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
                                 <Tooltip title="Add Image" arrow followCursor>
                                     <StyledButton size="small" onClick={fileUpload}>
-                                        <ImageOutlinedIcon fontSize="small" />
+                                        <ImageOutlinedIcon sx={{ fontSize: "19px" }} />
                                     </StyledButton>
                                 </Tooltip>
                                 <input
@@ -202,37 +230,40 @@ function Form() {
                                 />
                             </Box>
 
+                            <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
+                                <Tooltip title="Archive" arrow followCursor>
+                                    <StyledButton size="small" sx={{ cursor: 'no-drop', opacity: 0.4 }}>
+                                        <ArchiveOutlinedIcon sx={{ fontSize: "19px" }} />
+                                    </StyledButton>
+                                </Tooltip>
+                            </Box>
+
+                            <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
+                                <Tooltip title="Undo" arrow followCursor>
+                                    <StyledButton size="small" sx={{ cursor: 'no-drop', opacity: 0.4 }}>
+                                        <UndoIcon sx={{ fontSize: "19px" }} />
+                                    </StyledButton>
+                                </Tooltip>
+                            </Box>
+
+                            <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
+                                <Tooltip title="Redo" arrow followCursor>
+                                    <StyledButton size="small" sx={{ cursor: 'no-drop', opacity: 0.4 }}>
+                                        <RedoIcon sx={{ fontSize: "19px" }} />
+                                    </StyledButton>
+                                </Tooltip>
+                            </Box>
+
                             <Box sx={{ flexGrow: 1 }} />
 
-                            <Stack spacing={1.3} direction="row">
-                                <Button
-                                    onClick={addNote}
-                                    variant="contained"
-                                    sx={{
-                                        color: `${theme.palette.text.default}`,
-                                        background: `${theme.palette.searchBar.light}`,
-                                        '&:hover': {
-                                            background: `${theme.palette.searchBar.light}`
-                                        }
-                                    }}
-                                >
-                                    <SaveIcon />
-                                </Button>
+                            <Stack spacing={1} direction="row">
+                                <NoteButton variant="text" onClick={addNote} startIcon={<AddOutlinedIcon />}>
+                                    Add
+                                </NoteButton>
 
-                                <Button
-                                    variant="outlined"
-                                    onClick={closeForm}
-                                    sx={{
-                                        color: `${theme.palette.text.default}`,
-                                        borderColor: `${theme.palette.searchBar.light}`,
-                                        '&:hover': {
-                                            background: `${theme.palette.searchBar.light}`,
-                                            borderColor: `${theme.palette.searchBar.light}`,
-                                        }
-                                    }}
-                                >
-                                    <CloseIcon />
-                                </Button>
+                                <NoteButton variant="text" onClick={closeForm}>
+                                    Close
+                                </NoteButton>
                             </Stack>
                         </CardActions>
 

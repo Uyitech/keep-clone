@@ -20,7 +20,7 @@ function Main({ note }) {
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
             <DrawerHeader />
             <Form />
-            {note?.length > 0 ?
+            {note && note?.length > 0 ?
                 <Container maxWidth={false}>
                     <Box mt={8}>
                         <NoteBox />

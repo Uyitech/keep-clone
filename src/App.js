@@ -61,7 +61,7 @@ const Drawer = styled('div', { shouldForwardProp: (prop) => prop !== 'open' })(
 
 function App() {
     const [mode, setMode] = useState("dark")
-    const [open, setOpen] = React.useState(true);
+    const [open, setOpen] = React.useState(false);
 
     const selectedTheme = mode === "dark" ? dark : light;
 

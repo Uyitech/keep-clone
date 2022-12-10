@@ -1,16 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { db } from '../firebase/firebase';
+import Bricks from 'bricks.js'
+// import Masonry from 'react-masonry-css'
+import Tooltip from '@mui/material/Tooltip';
 import { styled } from '@mui/material/styles';
-import Grid from '@mui/material/Unstable_Grid2';
+// import Grid from '@mui/material/Unstable_Grid2';
 import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
-import { Card, CardContent, CardActions, CardMedia, Typography } from '@mui/material';
+import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
+import PaletteOutlinedIcon from '@mui/icons-material/PaletteOutlined';
+import AddAlertOutlinedIcon from '@mui/icons-material/AddAlertOutlined';
+import PersonAddAlt1OutlinedIcon from '@mui/icons-material/PersonAddAlt1Outlined';
+import { Card, CardContent, CardActions, CardMedia, Typography, Box } from '@mui/material';
 import { doc, collection, orderBy, query, deleteDoc, onSnapshot } from "firebase/firestore";
-import { ArchiveOutlined as Archive, DeleteOutlineOutlined as Delete } from '@mui/icons-material';
+import { ArchiveOutlined as Archive, DeleteOutlineOutlined as Delete, NoteAdd } from '@mui/icons-material';
+import { display } from '@mui/system';
 
 
 const StyledCard = styled(Card)(({ theme }) => ({
-    margin: '8px',
     width: '240px',
     display: "flex",
     background: 'none',
@@ -23,7 +30,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
     transition: theme.transitions.create("all", {
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.standard
-    })
+    }),
 }))
 
 const Title = styled(Typography)(({ theme }) => ({
@@ -44,9 +51,35 @@ const Content = styled(Typography)(({ theme }) => ({
     padding: '4px 16px 12px 16px',
 }))
 
+const StyledButton = styled(IconButton)(({ theme }) => ({
+    padding: 6,
+    color: `${theme.palette.custom.iconColor}`,
+    opacity: `${theme.palette.custom.iconOpacity}`,
+}));
+
+// const TimeStamp = styled(Typography)(({ theme }) => ({
+//     fontWeight: 400,
+//     fontSize: '.875rem',
+//     wordBreak: 'break-word',
+//     textAlign: 'right',
+//     padding: '4px 16px 0px 16px',
+// }))
+
+
 const NoteBox = () => {
     const theme = useTheme();
     const [note, setNote] = useState([])
+    const [file, setFile] = useState([])
+
+    const fileRef = useRef(null);
+
+    const fileUpload = () => {
+        fileRef.current.click();
+    };
+
+    const handleFileChange = (event) => {
+        setFile(URL.createObjectURL(event.target.files[0]));
+    }
 
     const fetchPost = () => {
         const collRef = (query(collection(db, "notes"), orderBy("time", "desc")));
@@ -72,30 +105,90 @@ const NoteBox = () => {
             });
     }
 
+    const sizes = [
+        { columns: 2, gutter: 10 },
+        { mq: '768px', columns: 3, gutter: 10 },
+        { mq: '1024px', columns: 6, gutter: 15 }
+    ]
+
+    useEffect(() => {
+        const instance = Bricks({
+            container: '.container',
+            packed: 'data-packed',
+            sizes: sizes,
+            position: false,
+        })
+        instance.pack()
+        instance.update()
+        instance.resize(true)
+    })
 
     return (
-        <Grid container spacing={{ xs: 2, md: 3 }} variant="masonry" columns={{ xs: 4, sm: 8, md: 12 }}>
+        <Box className='container'>
             {note?.map((notes) => {
                 return (
-                    <StyledCard key={notes.id}>
+                    <StyledCard key={notes.id} className="card-box">
                         <CardContent sx={{ p: 0 }}>
-                            <CardMedia image={notes.image} component="img" alt={notes.image} />
+                            <Box sx={{ display: 'flex', width: '100px' }}>
+                                {/* <Box> */}
+                                <CardMedia image={notes.image} component="img" alt={notes.image} />
+                                {/* </Box> */}
+
+                                <CardMedia image={file} component="img" alt={file} />
+                            </Box>
                             <Title>{notes.title}</Title>
                             <Content>{notes.content}</Content>
-                            {/* <Typography>{notes.time.toDate().toDateString()}</Typography> */}
+                            {/* <TimeStamp sx={{fontSize: 10}}>Created at: {notes.time.toDate().toDateString()}</TimeStamp> */}
                         </CardContent>
-                        <CardActions>
-                            <IconButton>
-                                <Archive fontSize="small" style={{ marginLeft: 'auto' }} />
-                            </IconButton>
-                            <IconButton onClick={() => deleteNote(notes.id)}>
-                                <Delete fontSize="small" />
-                            </IconButton>
+                        <CardActions className="card-action">
+
+                            <Tooltip title="" arrow followCursor>
+                                <StyledButton sx={{ cursor: 'no-drop', opacity: 0.4 }}>
+                                    <AddAlertOutlinedIcon sx={{ fontSize: "18px" }} />
+                                </StyledButton >
+                            </Tooltip>
+
+                            <Tooltip title="" arrow followCursor>
+                                <StyledButton sx={{ cursor: 'no-drop', opacity: 0.4 }}>
+                                    <PersonAddAlt1OutlinedIcon sx={{ fontSize: "18px" }} />
+                                </StyledButton >
+                            </Tooltip>
+
+                            <Tooltip title="Background options" arrow followCursor>
+                                <StyledButton>
+                                    <PaletteOutlinedIcon sx={{ fontSize: "18px" }} />
+                                </StyledButton >
+                            </Tooltip>
+
+                            <Tooltip title="Add image" arrow followCursor>
+                                <StyledButton onClick={fileUpload}>
+                                    <ImageOutlinedIcon sx={{ fontSize: "18px" }} />
+                                    <input type="file"
+                                        accept="image/*"
+                                        ref={fileRef}
+                                        style={{ display: 'none' }}
+                                        onChange={handleFileChange}
+                                    />
+                                </StyledButton>
+                            </Tooltip>
+
+                            <Tooltip title="Archive" arrow followCursor>
+                                <StyledButton>
+                                    <Archive sx={{ fontSize: "18px" }} />
+                                </StyledButton >
+                            </Tooltip>
+
+                            <Tooltip title="Delete" arrow followCursor>
+                                <StyledButton onClick={() => deleteNote(notes.id)}>
+                                    <Delete sx={{ fontSize: "18px" }} />
+                                </StyledButton >
+                            </Tooltip>
+
                         </CardActions>
                     </StyledCard>
                 )
             })}
-        </Grid>
+        </Box >
     )
 }
 

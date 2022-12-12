@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Form from './Form';
 import NoteBox from './NoteBox';
-import EmptyNotes from './EmptyNote';
+import EmptyNotes from './Pages/EmptyNote';
 import { Box, styled, Container } from '@mui/material';
 
 
@@ -14,13 +14,11 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 function Main({ note }) {
-    // console.log(note);
-
     return (
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
             <DrawerHeader />
             <Form />
-            {note && note?.length > 0 ?
+            {note ?
                 <Container maxWidth={false}>
                     <Box mt={8}>
                         <NoteBox />

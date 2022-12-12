@@ -38,8 +38,8 @@
 }
 
 .list {
+    gap: 5px;
     margin: 0;
-    gap: 10px;
     padding: 0;
     display: flex;
     padding-top: 8px;

@@ -4,7 +4,6 @@ import { styled } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import RedoIcon from '@mui/icons-material/Redo';
 import UndoIcon from '@mui/icons-material/Undo';
-import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import CardActions from '@mui/material/CardActions';
 import { Popover, CardMedia, Stack } from '@mui/material';
@@ -20,7 +19,6 @@ import { db } from '../firebase/firebase';
 import { storage } from "../firebase/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { textTransform } from '@mui/system';
 
 
 const Container = styled(Box)(({ theme }) => ({
@@ -82,13 +80,14 @@ function Form() {
     const handleClickAway = () => {
         setFile("")
         setColor("")
+        setTitle("")
+        setContent("")
         setShowTextField(false);
         containerRef.current.style.minheight = '30px'
     }
 
     const closeForm = () => {
         handleClickAway();
-        console.log("close")
     }
 
     const fileUpload = () => {
@@ -121,17 +120,19 @@ function Form() {
                         time: serverTimestamp(),
                     });
                     console.log("Document written with ID: ", docRef.id);
+                    handleClickAway();
                 } catch (e) {
                     console.error("Error adding document: ", e);
+                    handleClickAway();
                 }
             }
         )
 
-        setShowTextField(false);
-        setColor("")
-        setTitle("")
-        setFile("")
-        setContent("")
+        // setShowTextField(false);
+        // setColor("")
+        // setFile("")
+        // setTitle("")
+        // setContent("hello")
     }
 
     const onTextAreaClick = () => {
@@ -167,6 +168,7 @@ function Form() {
                             sx={{ borderRadius: '7px 7px 0px 0px' }}
                         />
                         <TextField
+                            value={title}
                             name='heading'
                             variant="standard"
                             placeholder="Title"
@@ -179,6 +181,7 @@ function Form() {
                 <TextField
                     multiline
                     name='text'
+                    value={content}
                     maxRows={Infinity}
                     variant="standard"
                     onClick={onTextAreaClick}

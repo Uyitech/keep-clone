@@ -1,14 +1,13 @@
 import React, { useState } from 'react'
-import { ThemeProvider } from '@mui/material/styles';
+import { light } from './theme';
+import { dark } from './theme';
 import { Box } from "@mui/material";
-import { CssBaseline } from '@mui/material';
-import HeaderBar from './components/AppBar';
-import Divider from '@mui/material/Divider';
 import Note from './components/Note';
 import { styled } from "@mui/material";
 import NavList from './components/NavList';
-import { light } from './theme';
-import { dark } from './theme';
+import { CssBaseline } from '@mui/material';
+import HeaderBar from './components/AppBar';
+import { ThemeProvider } from '@mui/material/styles';
 
 const drawerWidth = 240;
 
@@ -81,7 +80,6 @@ function App() {
                 <Drawer variant="permanent" open={open}>
                     <DrawerHeader />
                     <NavList />
-                    <Divider sx={{ borderBottomWidth: '2px' }} />
                 </Drawer>
                 <Note />
             </Box>

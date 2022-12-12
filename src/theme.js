@@ -1,6 +1,13 @@
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 
 const darkTheme = createTheme({
+    components: {
+        MuiListItemButton: {
+            defaultProps: {
+                disableTouchRipple: true,
+            },
+        },
+    },
     palette: {
         mode: 'dark',
         background: {
@@ -45,6 +52,13 @@ const darkTheme = createTheme({
 });
 
 const lightTheme = createTheme({
+    components: {
+        MuiListItemButton: {
+            defaultProps: {
+                disableTouchRipple: true,
+            },
+        },
+    },
     palette: {
         mode: 'light',
         background: {

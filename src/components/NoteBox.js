@@ -1,20 +1,24 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { db } from '../firebase/firebase';
 import Bricks from 'bricks.js'
-// import Masonry from 'react-masonry-css'
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
 import Tooltip from '@mui/material/Tooltip';
 import { styled } from '@mui/material/styles';
-// import Grid from '@mui/material/Unstable_Grid2';
-import { useTheme } from '@mui/material/styles';
+import Snackbar from '@mui/material/Snackbar';
+import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import PaletteOutlinedIcon from '@mui/icons-material/PaletteOutlined';
 import AddAlertOutlinedIcon from '@mui/icons-material/AddAlertOutlined';
 import PersonAddAlt1OutlinedIcon from '@mui/icons-material/PersonAddAlt1Outlined';
 import { Card, CardContent, CardActions, CardMedia, Typography, Box } from '@mui/material';
 import { doc, collection, orderBy, query, deleteDoc, onSnapshot } from "firebase/firestore";
-import { ArchiveOutlined as Archive, DeleteOutlineOutlined as Delete, NoteAdd } from '@mui/icons-material';
-import { display } from '@mui/system';
+import { ArchiveOutlined as Archive, DeleteOutlineOutlined as Delete } from '@mui/icons-material';
 
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -67,19 +71,10 @@ const StyledButton = styled(IconButton)(({ theme }) => ({
 
 
 const NoteBox = () => {
-    const theme = useTheme();
+    // const theme = useTheme();
     const [note, setNote] = useState([])
-    const [file, setFile] = useState([])
-
-    const fileRef = useRef(null);
-
-    const fileUpload = () => {
-        fileRef.current.click();
-    };
-
-    const handleFileChange = (event) => {
-        setFile(URL.createObjectURL(event.target.files[0]));
-    }
+    const [open, setOpen] = useState(false);
+    const [snackBar, setSnackBar] = useState(false);
 
     const fetchPost = () => {
         const collRef = (query(collection(db, "notes"), orderBy("time", "desc")));
@@ -100,10 +95,38 @@ const NoteBox = () => {
         deleteDoc(doc(db, "notes", notes))
             .then(() => {
                 console.log("Document successfully deleted!");
+                setSnackBar(true)
             }).catch((error) => {
                 console.error("Error removing document: ", error);
             });
     }
+
+    const closeSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setSnackBar(false);
+    };
+
+    const action = (
+        <React.Fragment>
+            <Button color="secondary" size="small" onClick={closeSnackbar}>
+                UNDO
+            </Button>
+            <Tooltip title="Dismiss" arrow followCursor>
+                <IconButton
+                    size="small"
+                    color="inherit"
+                    aria-label="close"
+                    onClick={closeSnackbar}
+                >
+                    <CloseIcon fontSize="small" />
+                </IconButton>
+            </Tooltip>
+        </React.Fragment >
+    );
+
 
     const sizes = [
         { columns: 2, gutter: 10 },
@@ -123,72 +146,134 @@ const NoteBox = () => {
         instance.resize(true)
     })
 
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     return (
-        <Box className='container'>
-            {note?.map((notes) => {
-                return (
-                    <StyledCard key={notes.id} className="card-box">
-                        <CardContent sx={{ p: 0 }}>
-                            <Box sx={{ display: 'flex', width: '100px' }}>
-                                {/* <Box> */}
+        <>
+            <Box className='container'>
+                {note?.map((notes) => {
+                    return (
+                        <StyledCard key={notes.id} className="card-box">
+                            <CardContent sx={{ p: 0 }} onClick={handleClickOpen}>
                                 <CardMedia image={notes.image} component="img" alt={notes.image} />
-                                {/* </Box> */}
+                                <Title>{notes.title}</Title>
+                                <Content>{notes.content}</Content>
+                            </CardContent>
+                            <CardActions className="card-action">
 
-                                <CardMedia image={file} component="img" alt={file} />
-                            </Box>
-                            <Title>{notes.title}</Title>
-                            <Content>{notes.content}</Content>
-                            {/* <TimeStamp sx={{fontSize: 10}}>Created at: {notes.time.toDate().toDateString()}</TimeStamp> */}
-                        </CardContent>
-                        <CardActions className="card-action">
+                                <Tooltip title="Remind me" arrow followCursor>
+                                    <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
+                                        <AddAlertOutlinedIcon sx={{ fontSize: "18px" }} />
+                                    </StyledButton >
+                                </Tooltip>
 
-                            <Tooltip title="" arrow followCursor>
-                                <StyledButton sx={{ cursor: 'no-drop', opacity: 0.4 }}>
-                                    <AddAlertOutlinedIcon sx={{ fontSize: "18px" }} />
-                                </StyledButton >
-                            </Tooltip>
+                                <Tooltip title="Collaborator" arrow followCursor>
+                                    <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
+                                        <PersonAddAlt1OutlinedIcon sx={{ fontSize: "18px" }} />
+                                    </StyledButton >
+                                </Tooltip>
 
-                            <Tooltip title="" arrow followCursor>
-                                <StyledButton sx={{ cursor: 'no-drop', opacity: 0.4 }}>
-                                    <PersonAddAlt1OutlinedIcon sx={{ fontSize: "18px" }} />
-                                </StyledButton >
-                            </Tooltip>
+                                <Tooltip title="Background options" arrow followCursor>
+                                    <StyledButton>
+                                        <PaletteOutlinedIcon sx={{ fontSize: "18px" }} />
+                                    </StyledButton >
+                                </Tooltip>
 
-                            <Tooltip title="Background options" arrow followCursor>
-                                <StyledButton>
-                                    <PaletteOutlinedIcon sx={{ fontSize: "18px" }} />
-                                </StyledButton >
-                            </Tooltip>
+                                <Tooltip title="Add image" arrow followCursor>
+                                    <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
+                                        <ImageOutlinedIcon sx={{ fontSize: "18px" }} />
+                                        <input type="file"
+                                            accept="image/*"
+                                            style={{ display: 'none' }}
+                                        />
+                                    </StyledButton>
+                                </Tooltip>
 
-                            <Tooltip title="Add image" arrow followCursor>
-                                <StyledButton onClick={fileUpload}>
-                                    <ImageOutlinedIcon sx={{ fontSize: "18px" }} />
-                                    <input type="file"
-                                        accept="image/*"
-                                        ref={fileRef}
-                                        style={{ display: 'none' }}
-                                        onChange={handleFileChange}
-                                    />
-                                </StyledButton>
-                            </Tooltip>
+                                <Tooltip title="Archive" arrow followCursor>
+                                    <StyledButton>
+                                        <Archive sx={{ fontSize: "18px" }} />
+                                    </StyledButton >
+                                </Tooltip>
 
-                            <Tooltip title="Archive" arrow followCursor>
-                                <StyledButton>
-                                    <Archive sx={{ fontSize: "18px" }} />
-                                </StyledButton >
-                            </Tooltip>
+                                <Tooltip title="Delete" arrow followCursor>
+                                    <StyledButton onClick={() => deleteNote(notes.id)}>
+                                        <Delete sx={{ fontSize: "18px" }} />
+                                    </StyledButton >
+                                </Tooltip>
 
-                            <Tooltip title="Delete" arrow followCursor>
-                                <StyledButton onClick={() => deleteNote(notes.id)}>
-                                    <Delete sx={{ fontSize: "18px" }} />
-                                </StyledButton >
-                            </Tooltip>
+                            </CardActions>
+                        </StyledCard>
+                    )
+                })}
+            </Box >
+            <Snackbar
+                action={action}
+                open={snackBar}
+                message="Note Trash"
+                onClose={closeSnackbar}
+                autoHideDuration={6000}
+            />
+            <div>
+                <Dialog open={open} onClose={handleClose}>
+                    <DialogContent sx={{ p: 0 }}>
+                        <CardMedia image={note.image} component="img" alt={note.image} />
+                        <Title>{note.title}</Title>
+                        <Content>{note.content}</Content>
+                        {/* <TimeStamp sx={{ fontSize: 10 }}>Created at: {notes.time.toDate().toDateString()}</TimeStamp> */}
+                    </DialogContent>
 
-                        </CardActions>
-                    </StyledCard>
-                )
-            })}
-        </Box >
+                    <DialogActions>
+
+                        <Tooltip title="Remind me" arrow followCursor>
+                            <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
+                                <AddAlertOutlinedIcon sx={{ fontSize: "18px" }} />
+                            </StyledButton >
+                        </Tooltip>
+
+                        <Tooltip title="Collaborator" arrow followCursor>
+                            <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
+                                <PersonAddAlt1OutlinedIcon sx={{ fontSize: "18px" }} />
+                            </StyledButton >
+                        </Tooltip>
+
+                        <Tooltip title="Background options" arrow followCursor>
+                            <StyledButton>
+                                <PaletteOutlinedIcon sx={{ fontSize: "18px" }} />
+                            </StyledButton >
+                        </Tooltip>
+
+                        <Tooltip title="Add image" arrow followCursor>
+                            <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
+                                <ImageOutlinedIcon sx={{ fontSize: "18px" }} />
+                                <input type="file"
+                                    accept="image/*"
+                                    style={{ display: 'none' }}
+                                />
+                            </StyledButton>
+                        </Tooltip>
+
+                        <Tooltip title="Archive" arrow followCursor>
+                            <StyledButton>
+                                <Archive sx={{ fontSize: "18px" }} />
+                            </StyledButton >
+                        </Tooltip>
+
+                        <Tooltip title="Delete" arrow followCursor>
+                            <StyledButton >
+                                <Delete sx={{ fontSize: "18px" }} />
+                            </StyledButton >
+                        </Tooltip>
+
+                    </DialogActions>
+                </Dialog>
+            </div>
+        </>
     )
 }
 

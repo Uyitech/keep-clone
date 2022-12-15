@@ -1,3 +1,4 @@
+import EditNote from './EditNote';
 import React, { useState, useRef } from 'react';
 import { ThemeProvider, useTheme } from '@mui/material/styles';
 import { styled } from '@mui/material/styles';
@@ -14,6 +15,7 @@ import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import { Box, TextField, ClickAwayListener, Button } from '@mui/material';
 import AddAlertOutlinedIcon from '@mui/icons-material/AddAlertOutlined';
 import PersonAddAlt1OutlinedIcon from '@mui/icons-material/PersonAddAlt1Outlined';
+
 
 import { db } from '../firebase/firebase';
 import { storage } from "../firebase/firebase";
@@ -105,7 +107,6 @@ function Form() {
         const storageRef = ref(storage, `/images/${image.name}`)
         const uploadTask = uploadBytesResumable(storageRef, image);
 
-
         uploadTask.on(
             "state_changed",
             (snapshot) => { },
@@ -128,11 +129,11 @@ function Form() {
             }
         )
 
-        // setShowTextField(false);
-        // setColor("")
-        // setFile("")
-        // setTitle("")
-        // setContent("hello")
+        setShowTextField(false);
+        setColor("")
+        setFile("")
+        setTitle("")
+        setContent("")
     }
 
     const onTextAreaClick = () => {
@@ -168,6 +169,7 @@ function Form() {
                             sx={{ borderRadius: '7px 7px 0px 0px' }}
                         />
                         <TextField
+                            multiline
                             value={title}
                             name='heading'
                             variant="standard"
@@ -187,8 +189,8 @@ function Form() {
                     onClick={onTextAreaClick}
                     placeholder="Take a note..."
                     sx={{ padding: '5.5px 15px', }}
-                    onChange={(e) => setContent(e.target.value)}
                     InputProps={{ disableUnderline: true }}
+                    onChange={(e) => setContent(e.target.value)}
                 />
                 {showTextField &&
                     <>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Form from './Form';
 import NoteBox from './NoteBox';
 import EmptyNotes from './Pages/EmptyNote';
@@ -13,27 +13,38 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     ...theme.mixins.toolbar,
 }));
 
-function Main({ note }) {
+function Main(note) {
+
+    // let note = props.notes
+    // const cars = props.cars;
+
     return (
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
             <DrawerHeader />
             <Form />
-            {note ?
+
+            {note?.length > 0 ?
                 <Container maxWidth={false}>
                     <Box mt={8}>
                         <NoteBox />
                     </Box>
                 </Container>
                 :
-                // <EmptyNotes />
                 <Container maxWidth={false}>
                     <Box mt={8}>
                         <NoteBox />
                     </Box>
                 </Container>
             }
+
+            {/* {cars.length > 0 &&
+                <h2>
+                    You have {cars.length} cars in your garage.
+                </h2>
+            } */}
+
         </Box>
     )
 }
-
+// const cars = ['Ford', 'BMW', 'Audi'];
 export default Main;

@@ -4,11 +4,13 @@ import Bricks from 'bricks.js'
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Tooltip from '@mui/material/Tooltip';
-import { styled } from '@mui/material/styles';
 import Snackbar from '@mui/material/Snackbar';
+import RedoIcon from '@mui/icons-material/Redo';
+import UndoIcon from '@mui/icons-material/Undo';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import DialogTitle from '@mui/material/DialogTitle';
+import { styled, useTheme, Stack } from '@mui/material';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
@@ -61,6 +63,28 @@ const StyledButton = styled(IconButton)(({ theme }) => ({
     opacity: `${theme.palette.custom.iconOpacity}`,
 }));
 
+const NoteButton = styled(Button)(({ theme }) => ({
+    padding: '4px 15px',
+    textTransform: 'capitalize',
+    color: `${theme.palette.text.default}`,
+    '&:hover': {
+        background: `${theme.palette.searchBar.light}`
+    }
+}));
+
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+    '& .MuiDialog-paper': {
+        borderRadius: '8px',
+        overflowX: 'hidden',
+        borderStyle: "solid",
+        borderColor: '#5f6368',
+        borderWidth: theme.spacing(0.1),
+        background: `${theme.palette.background.default}`,
+    }
+}));
+
+
+
 // const TimeStamp = styled(Typography)(({ theme }) => ({
 //     fontWeight: 400,
 //     fontSize: '.875rem',
@@ -70,11 +94,19 @@ const StyledButton = styled(IconButton)(({ theme }) => ({
 // }))
 
 
-const NoteBox = () => {
+export default function NoteBox() {
     // const theme = useTheme();
     const [note, setNote] = useState([])
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = React.useState(false);
     const [snackBar, setSnackBar] = useState(false);
+    // const [scroll, setScroll] = React.useState('paper');
+
+
+    const handleClickOpen = () => {
+        setOpen(true);
+        // setScroll(scrollType);
+    };
+    const handleClose = () => { setOpen(false); };
 
     const fetchPost = () => {
         const collRef = (query(collection(db, "notes"), orderBy("time", "desc")));
@@ -127,91 +159,89 @@ const NoteBox = () => {
         </React.Fragment >
     );
 
-
-    const sizes = [
-        { columns: 2, gutter: 10 },
-        { mq: '768px', columns: 3, gutter: 10 },
-        { mq: '1024px', columns: 6, gutter: 15 }
-    ]
-
     useEffect(() => {
-        const instance = Bricks({
+        const bricks = Bricks({
             container: '.container',
             packed: 'data-packed',
-            sizes: sizes,
+            sizes: [
+                { columns: 2, gutter: 10 },
+                { mq: '768px', columns: 3, gutter: 10 },
+                { mq: '1024px', columns: 6, gutter: 15 }
+            ],
             position: false,
         })
-        instance.pack()
-        instance.update()
-        instance.resize(true)
+        bricks.pack()
+        bricks.update()
+        bricks.resize(true)
     })
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
 
     return (
         <>
             <Box className='container'>
-                {note?.map((notes) => {
+                {note?.map((notes, index) => {
                     return (
-                        <StyledCard key={notes.id} className="card-box">
-                            <CardContent sx={{ p: 0 }} onClick={handleClickOpen}>
-                                <CardMedia image={notes.image} component="img" alt={notes.image} />
-                                <Title>{notes.title}</Title>
-                                <Content>{notes.content}</Content>
-                            </CardContent>
-                            <CardActions className="card-action">
+                        <>
+                            <StyledCard key={notes.id} className="card-box">
+                                <CardContent sx={{ p: 0 }} onClick={handleClickOpen}>
+                                    <CardMedia image={notes.image} component="img" alt={notes.image} />
+                                    <Title >{notes.title}</Title>
+                                    <Content >{notes.content}</Content>
+                                </CardContent>
+                                <CardActions className="card-action">
 
-                                <Tooltip title="Remind me" arrow followCursor>
-                                    <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
-                                        <AddAlertOutlinedIcon sx={{ fontSize: "18px" }} />
-                                    </StyledButton >
-                                </Tooltip>
+                                    <Tooltip title="Remind me" arrow followCursor>
+                                        <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
+                                            <AddAlertOutlinedIcon sx={{ fontSize: "18px" }} />
+                                        </StyledButton >
+                                    </Tooltip>
 
-                                <Tooltip title="Collaborator" arrow followCursor>
-                                    <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
-                                        <PersonAddAlt1OutlinedIcon sx={{ fontSize: "18px" }} />
-                                    </StyledButton >
-                                </Tooltip>
+                                    <Tooltip title="Collaborator" arrow followCursor>
+                                        <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
+                                            <PersonAddAlt1OutlinedIcon sx={{ fontSize: "18px" }} />
+                                        </StyledButton >
+                                    </Tooltip>
 
-                                <Tooltip title="Background options" arrow followCursor>
-                                    <StyledButton>
-                                        <PaletteOutlinedIcon sx={{ fontSize: "18px" }} />
-                                    </StyledButton >
-                                </Tooltip>
+                                    <Tooltip title="Background options" arrow followCursor>
+                                        <StyledButton>
+                                            <PaletteOutlinedIcon sx={{ fontSize: "18px" }} />
+                                        </StyledButton >
+                                    </Tooltip>
 
-                                <Tooltip title="Add image" arrow followCursor>
-                                    <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
-                                        <ImageOutlinedIcon sx={{ fontSize: "18px" }} />
-                                        <input type="file"
-                                            accept="image/*"
-                                            style={{ display: 'none' }}
-                                        />
-                                    </StyledButton>
-                                </Tooltip>
+                                    <Tooltip title="Add image" arrow followCursor>
+                                        <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
+                                            <ImageOutlinedIcon sx={{ fontSize: "18px" }} />
+                                            <input type="file"
+                                                accept="image/*"
+                                                style={{ display: 'none' }}
+                                            />
+                                        </StyledButton>
+                                    </Tooltip>
 
-                                <Tooltip title="Archive" arrow followCursor>
-                                    <StyledButton>
-                                        <Archive sx={{ fontSize: "18px" }} />
-                                    </StyledButton >
-                                </Tooltip>
+                                    <Tooltip title="Archive" arrow followCursor>
+                                        <StyledButton>
+                                            <Archive sx={{ fontSize: "18px" }} />
+                                        </StyledButton >
+                                    </Tooltip>
 
-                                <Tooltip title="Delete" arrow followCursor>
-                                    <StyledButton onClick={() => deleteNote(notes.id)}>
-                                        <Delete sx={{ fontSize: "18px" }} />
-                                    </StyledButton >
-                                </Tooltip>
+                                    <Tooltip title="Delete" arrow followCursor>
+                                        <StyledButton onClick={() => deleteNote(notes.id)}>
+                                            <Delete sx={{ fontSize: "18px" }} />
+                                        </StyledButton >
+                                    </Tooltip>
 
-                            </CardActions>
-                        </StyledCard>
+                                </CardActions>
+                            </StyledCard>
+
+                            <EditNote
+                                open={open}
+                                data={notes}
+                                onClose={handleClose}
+                                idIndexObject={index}
+                            />
+                        </>
                     )
                 })}
-            </Box >
+            </Box>
             <Snackbar
                 action={action}
                 open={snackBar}
@@ -219,62 +249,105 @@ const NoteBox = () => {
                 onClose={closeSnackbar}
                 autoHideDuration={6000}
             />
-            <div>
-                <Dialog open={open} onClose={handleClose}>
-                    <DialogContent sx={{ p: 0 }}>
-                        <CardMedia image={note.image} component="img" alt={note.image} />
-                        <Title>{note.title}</Title>
-                        <Content>{note.content}</Content>
-                        {/* <TimeStamp sx={{ fontSize: 10 }}>Created at: {notes.time.toDate().toDateString()}</TimeStamp> */}
-                    </DialogContent>
 
-                    <DialogActions>
-
-                        <Tooltip title="Remind me" arrow followCursor>
-                            <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
-                                <AddAlertOutlinedIcon sx={{ fontSize: "18px" }} />
-                            </StyledButton >
-                        </Tooltip>
-
-                        <Tooltip title="Collaborator" arrow followCursor>
-                            <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
-                                <PersonAddAlt1OutlinedIcon sx={{ fontSize: "18px" }} />
-                            </StyledButton >
-                        </Tooltip>
-
-                        <Tooltip title="Background options" arrow followCursor>
-                            <StyledButton>
-                                <PaletteOutlinedIcon sx={{ fontSize: "18px" }} />
-                            </StyledButton >
-                        </Tooltip>
-
-                        <Tooltip title="Add image" arrow followCursor>
-                            <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
-                                <ImageOutlinedIcon sx={{ fontSize: "18px" }} />
-                                <input type="file"
-                                    accept="image/*"
-                                    style={{ display: 'none' }}
-                                />
-                            </StyledButton>
-                        </Tooltip>
-
-                        <Tooltip title="Archive" arrow followCursor>
-                            <StyledButton>
-                                <Archive sx={{ fontSize: "18px" }} />
-                            </StyledButton >
-                        </Tooltip>
-
-                        <Tooltip title="Delete" arrow followCursor>
-                            <StyledButton >
-                                <Delete sx={{ fontSize: "18px" }} />
-                            </StyledButton >
-                        </Tooltip>
-
-                    </DialogActions>
-                </Dialog>
-            </div>
         </>
     )
 }
 
-export default NoteBox;
+
+function EditNote(props) {
+    const theme = useTheme();
+    const [isEditing, setIsEditing] = useState(false);
+
+    const editMe = () => { setIsEditing(true); }
+
+    const { onClose, open } = props;
+    const handleClose = () => { onClose(); };
+
+    return (
+        <div className="overRallDialog">
+            <StyledDialog onClose={handleClose} open={open}>
+
+
+                <DialogContent sx={{ width: 600 }} dividers className="secondDialog">
+
+                    <CardMedia image={props.data.image} component="img" alt={props.data.image} sx={{ padding: 0 }} />
+
+                    <DialogTitle onClick={editMe} contentEditable={isEditing}>{props.data.title}</DialogTitle>
+
+                    <DialogContentText onClick={editMe} contentEditable={isEditing}>{props.data.content}</DialogContentText>
+
+                    {/* <DialogContentText onClick={editMe} contentEditable={isEditing}>{props.idIndexObject}</DialogContentText> */}
+
+                </DialogContent>
+                <DialogActions disableSpacing sx={{ flex: '1 0 auto', padding: '4px 15px 4px 15px', boxShadow: '0 -2px 5px rgb(0 0 0 / 20%)' }} >
+
+                    <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
+                        <Tooltip title="Remind me" arrow followCursor>
+                            <StyledButton size="small" sx={{ cursor: 'no-drop', opacity: 0.4 }}>
+                                <AddAlertOutlinedIcon sx={{ fontSize: "19px" }} />
+                            </StyledButton >
+                        </Tooltip>
+                    </Box>
+
+                    <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
+                        <Tooltip title="Collaborator" arrow followCursor>
+                            <StyledButton size="small" sx={{ cursor: 'no-drop', opacity: 0.4 }}>
+                                <PersonAddAlt1OutlinedIcon sx={{ fontSize: "19px" }} />
+                            </StyledButton >
+                        </Tooltip>
+                    </Box>
+
+                    <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
+                        <Tooltip title="Background options" arrow followCursor>
+                            <StyledButton size="small" onClick="">
+                                <PaletteOutlinedIcon sx={{ fontSize: "19px" }} />
+                            </StyledButton>
+                        </Tooltip>
+                    </Box>
+
+                    <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
+                        <Tooltip title="Add Image" arrow followCursor>
+                            <StyledButton size="small" onClick="">
+                                <ImageOutlinedIcon sx={{ fontSize: "19px" }} />
+                            </StyledButton>
+                        </Tooltip>
+                    </Box>
+
+                    <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
+                        <Tooltip title="Archive" arrow followCursor>
+                            <StyledButton size="small" sx={{ cursor: 'no-drop', opacity: 0.4 }}>
+                                <Archive sx={{ fontSize: "19px" }} />
+                            </StyledButton>
+                        </Tooltip>
+                    </Box>
+
+                    <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
+                        <Tooltip title="Undo" arrow followCursor>
+                            <StyledButton size="small" sx={{ cursor: 'no-drop', opacity: 0.4 }}>
+                                <UndoIcon sx={{ fontSize: "19px" }} />
+                            </StyledButton>
+                        </Tooltip>
+                    </Box>
+
+                    <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
+                        <Tooltip title="Redo" arrow followCursor>
+                            <StyledButton size="small" sx={{ cursor: 'no-drop', opacity: 0.4 }}>
+                                <RedoIcon sx={{ fontSize: "19px" }} />
+                            </StyledButton>
+                        </Tooltip>
+                    </Box>
+
+                    <Box sx={{ flexGrow: 1 }} />
+
+                    <Stack direction="row">
+                        <NoteButton variant="text" onClick={handleClose}>
+                            Close
+                        </NoteButton>
+                    </Stack>
+                </DialogActions>
+
+            </StyledDialog>
+        </div>
+    );
+}

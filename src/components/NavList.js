@@ -4,6 +4,7 @@ import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import { List, ListItem, ListItemIcon, ListItemButton } from '@mui/material';
 import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import { useNavigate } from "react-router-dom";
 
 
 const ListItemText = styled('span')(({ theme }) => ({
@@ -27,50 +28,61 @@ const ItemButton = styled(ListItemButton)(({ theme }) => ({
 
 
 const NavList = (open) => {
-    const theme = useTheme;
-    const [selectedIndex, setSelectedIndex] = React.useState(1);
+    const [selectedIndex, setSelectedIndex] = React.useState(0);
 
-    const handleListItemClick = (event, index) => {
-        setSelectedIndex(index);
-    };
+    // const handleListItemClick = (event, index) => {
+    //     setSelectedIndex(index);
+    // };
+
+    const navigate = useNavigate();
+
+    const Home = (e) => {
+        navigate("/")
+        e.preventDefault()
+        setSelectedIndex(0);
+    }
+
+    const Archive = (e) => {
+        e.preventDefault()
+        navigate("/Archive")
+    }
+
+    const Trash = (e) => {
+        e.preventDefault()
+        navigate("/Trash")
+        setSelectedIndex(2);
+    }
+
+
 
     return (
         <List component="nav" className='list'>
-            <Item>
-                <ItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5 }}
-                    selected={selectedIndex === 0}
-                    onClick={(event) => handleListItemClick(event, 0)}
-                >
-                    <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
-                        <LightbulbOutlinedIcon sx={{ color: 'text.default' }} />
-                    </ListItemIcon>
-                    <ListItemText sx={{ color: 'text.default', opacity: open ? 1 : 0 }}>Notes</ListItemText>
-                </ItemButton>
-            </Item>
+            <ItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5 }}
+                selected={selectedIndex === 0} onClick={Home}
+            >
+                <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
+                    <LightbulbOutlinedIcon sx={{ color: 'text.default' }} />
+                </ListItemIcon>
+                <ListItemText sx={{ color: 'text.default', opacity: open ? 1 : 0 }}>Notes</ListItemText>
+            </ItemButton>
 
-            <Item>
-                <ItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5 }}
-                    selected={selectedIndex === 1}
-                    onClick={(event) => handleListItemClick(event, 1)}
-                >
-                    <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
-                        <ArchiveOutlinedIcon sx={{ color: 'text.default' }} />
-                    </ListItemIcon>
-                    <ListItemText sx={{ color: 'text.default', opacity: open ? 1 : 0 }}>Notes</ListItemText>
-                </ItemButton>
-            </Item>
+            <ItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5 }}
+                selected={selectedIndex === 1} onClick={Archive}
+            >
+                <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
+                    <ArchiveOutlinedIcon sx={{ color: 'text.default' }} />
+                </ListItemIcon>
+                <ListItemText sx={{ color: 'text.default', opacity: open ? 1 : 0 }}>Notes</ListItemText>
+            </ItemButton>
 
-            <Item>
-                <ItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5 }}
-                    selected={selectedIndex === 2}
-                    onClick={(event) => handleListItemClick(event, 2)}
-                >
-                    <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
-                        <DeleteOutlineOutlinedIcon sx={{ color: 'text.default' }} />
-                    </ListItemIcon>
-                    <ListItemText sx={{ color: 'text.default', opacity: open ? 1 : 0 }}>Trash</ListItemText>
-                </ItemButton>
-            </Item>
+            <ItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5 }}
+                selected={selectedIndex === 2} onClick={Trash}
+            >
+                <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
+                    <DeleteOutlineOutlinedIcon sx={{ color: 'text.default' }} />
+                </ListItemIcon>
+                <ListItemText sx={{ color: 'text.default', opacity: open ? 1 : 0 }}>Trash</ListItemText>
+            </ItemButton>
         </List>
     )
 }

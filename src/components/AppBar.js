@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
     styled,
     InputBase,
@@ -10,7 +10,9 @@ import {
 } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import MenuIcon from "@mui/icons-material/Menu";
+import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from "@mui/icons-material/Search";
+import InputAdornment from '@mui/material/InputAdornment';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import ViewAgendaOutlined from '@mui/icons-material/ViewAgendaOutlined';
 import Brightness4OutlinedIcon from '@mui/icons-material/Brightness4Outlined';
@@ -65,6 +67,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function HeaderBar({ open, handleDrawerOpen, toogleMode }) {
     const theme = useTheme();
+    const [search, setSearch] = useState("")
     const [searchBar, setSearchBar] = React.useState(true)
 
     const toogleSearchBar = () => {
@@ -86,11 +89,23 @@ export default function HeaderBar({ open, handleDrawerOpen, toogleMode }) {
 
                 <LogoContainer />
                 {searchBar && (
-                    <Search >
+                    <Search>
                         <SearchIconWrapper>
                             <SearchIcon sx={{ color: 'text.default' }} />
                         </SearchIconWrapper>
-                        <StyledInputBase placeholder="Search..." inputProps={{ 'aria-label': 'search' }} sx={{ color: 'text.default' }} />
+                        <StyledInputBase
+                            value={search}
+                            placeholder="Search.."
+                            onChange={(e) => setSearch(e.target.value)}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton sx={{ visibility: search ? "visible" : "hidden" }}
+                                        onClick={() => setSearch("")}>
+                                        <ClearIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                            sx={{ color: 'text.default' }} />
                     </Search>
                 )}
 

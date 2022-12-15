@@ -7,7 +7,6 @@ import { styled } from "@mui/material";
 import NavList from './components/NavList';
 import { CssBaseline } from '@mui/material';
 import HeaderBar from './components/AppBar';
-import EditNote from './components/EditNote';
 import { ThemeProvider } from '@mui/material/styles';
 
 const drawerWidth = 240;
@@ -74,7 +73,6 @@ function App() {
     };
 
 
-
     return (
         <ThemeProvider theme={selectedTheme}>
             <CssBaseline />
@@ -85,7 +83,6 @@ function App() {
                     <NavList />
                 </Drawer>
                 <Note />
-                <EditNote />
             </Box>
         </ThemeProvider>
     )

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../firebase/firebase';
 import Bricks from 'bricks.js'
+// import EditNote from './EditNote';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import Tooltip from '@mui/material/Tooltip';
@@ -83,7 +84,22 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
     }
 }));
 
+const StyledTitle = styled(DialogTitle)(({ theme }) => ({
+    color: '#e8eaed',
+    letterSpacing: 0,
+    fontWeight: '400',
+    padding: '12px 16px',
+    fontSize: '1.375rem',
+    lineHeight: '1.75rem',
+}))
 
+const StyledContent = styled(DialogContentText)(({ theme }) => ({
+    color: '#e8eaed',
+    fontSize: '1rem',
+    fontWeight: '400',
+    letterSpacing: '.00625em',
+    padding: '0px 16px 12px 16px',
+}))
 
 // const TimeStamp = styled(Typography)(({ theme }) => ({
 //     fontWeight: 400,
@@ -95,16 +111,15 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
 
 
 export default function NoteBox() {
-    // const theme = useTheme();
-    const [note, setNote] = useState([])
+    const [notes, setNotes] = useState([])
+    const [currentNote, setCurrentNote] = useState([])
     const [open, setOpen] = React.useState(false);
     const [snackBar, setSnackBar] = useState(false);
-    // const [scroll, setScroll] = React.useState('paper');
 
 
-    const handleClickOpen = () => {
+    const handleClickOpen = (openedNote) => {
         setOpen(true);
-        // setScroll(scrollType);
+        setCurrentNote(openedNote);
     };
     const handleClose = () => { setOpen(false); };
 
@@ -114,7 +129,7 @@ export default function NoteBox() {
             const newData = querySnapshot.docs.map((doc) => {
                 return { ...doc.data(), id: doc.id }
             });
-            setNote(newData);
+            setNotes(newData);
         })
         return unsub;
     }
@@ -137,7 +152,6 @@ export default function NoteBox() {
         if (reason === 'clickaway') {
             return;
         }
-
         setSnackBar(false);
     };
 
@@ -178,70 +192,66 @@ export default function NoteBox() {
     return (
         <>
             <Box className='container'>
-                {note?.map((notes, index) => {
+                {notes?.map((note) => {
                     return (
-                        <>
-                            <StyledCard key={notes.id} className="card-box">
-                                <CardContent sx={{ p: 0 }} onClick={handleClickOpen}>
-                                    <CardMedia image={notes.image} component="img" alt={notes.image} />
-                                    <Title >{notes.title}</Title>
-                                    <Content >{notes.content}</Content>
-                                </CardContent>
-                                <CardActions className="card-action">
+                        <StyledCard key={note.id} className="card-box">
+                            <CardContent sx={{ p: 0 }} onClick={() => handleClickOpen(note)}>
+                                <CardMedia image={note.image} component="img" alt={note.image} />
+                                <Title>{note.title}</Title>
+                                <Content>{note.content}</Content>
+                            </CardContent>
+                            <CardActions className="card-action">
 
-                                    <Tooltip title="Remind me" arrow followCursor>
-                                        <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
-                                            <AddAlertOutlinedIcon sx={{ fontSize: "18px" }} />
-                                        </StyledButton >
-                                    </Tooltip>
+                                <Tooltip title="Remind me" arrow followCursor>
+                                    <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
+                                        <AddAlertOutlinedIcon sx={{ fontSize: "18px" }} />
+                                    </StyledButton >
+                                </Tooltip>
 
-                                    <Tooltip title="Collaborator" arrow followCursor>
-                                        <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
-                                            <PersonAddAlt1OutlinedIcon sx={{ fontSize: "18px" }} />
-                                        </StyledButton >
-                                    </Tooltip>
+                                <Tooltip title="Collaborator" arrow followCursor>
+                                    <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
+                                        <PersonAddAlt1OutlinedIcon sx={{ fontSize: "18px" }} />
+                                    </StyledButton >
+                                </Tooltip>
 
-                                    <Tooltip title="Background options" arrow followCursor>
-                                        <StyledButton>
-                                            <PaletteOutlinedIcon sx={{ fontSize: "18px" }} />
-                                        </StyledButton >
-                                    </Tooltip>
+                                <Tooltip title="Background options" arrow followCursor>
+                                    <StyledButton>
+                                        <PaletteOutlinedIcon sx={{ fontSize: "18px" }} />
+                                    </StyledButton >
+                                </Tooltip>
 
-                                    <Tooltip title="Add image" arrow followCursor>
-                                        <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
-                                            <ImageOutlinedIcon sx={{ fontSize: "18px" }} />
-                                            <input type="file"
-                                                accept="image/*"
-                                                style={{ display: 'none' }}
-                                            />
-                                        </StyledButton>
-                                    </Tooltip>
+                                <Tooltip title="Add image" arrow followCursor>
+                                    <StyledButton sx={{ cursor: 'not-allowed', opacity: 0.4 }}>
+                                        <ImageOutlinedIcon sx={{ fontSize: "18px" }} />
+                                        <input type="file"
+                                            accept="image/*"
+                                            style={{ display: 'none' }}
+                                        />
+                                    </StyledButton>
+                                </Tooltip>
 
-                                    <Tooltip title="Archive" arrow followCursor>
-                                        <StyledButton>
-                                            <Archive sx={{ fontSize: "18px" }} />
-                                        </StyledButton >
-                                    </Tooltip>
+                                <Tooltip title="Archive" arrow followCursor>
+                                    <StyledButton>
+                                        <Archive sx={{ fontSize: "18px" }} />
+                                    </StyledButton >
+                                </Tooltip>
 
-                                    <Tooltip title="Delete" arrow followCursor>
-                                        <StyledButton onClick={() => deleteNote(notes.id)}>
-                                            <Delete sx={{ fontSize: "18px" }} />
-                                        </StyledButton >
-                                    </Tooltip>
+                                <Tooltip title="Delete" arrow followCursor>
+                                    <StyledButton onClick={() => deleteNote(note.id)}>
+                                        <Delete sx={{ fontSize: "18px" }} />
+                                    </StyledButton >
+                                </Tooltip>
 
-                                </CardActions>
-                            </StyledCard>
-
-                            <EditNote
-                                open={open}
-                                data={notes}
-                                onClose={handleClose}
-                                idIndexObject={index}
-                            />
-                        </>
+                            </CardActions>
+                        </StyledCard>
                     )
                 })}
             </Box>
+            <EditNote
+                open={open}
+                data={currentNote}
+                onClose={handleClose}
+            />
             <Snackbar
                 action={action}
                 open={snackBar}
@@ -264,18 +274,19 @@ function EditNote(props) {
     const { onClose, open } = props;
     const handleClose = () => { onClose(); };
 
+
     return (
         <div className="overRallDialog">
             <StyledDialog onClose={handleClose} open={open}>
 
 
-                <DialogContent sx={{ width: 600 }} dividers className="secondDialog">
+                <DialogContent sx={{ padding: 0 }} className="secondDialog">
 
                     <CardMedia image={props.data.image} component="img" alt={props.data.image} sx={{ padding: 0 }} />
 
-                    <DialogTitle onClick={editMe} contentEditable={isEditing}>{props.data.title}</DialogTitle>
+                    <StyledTitle onClick={editMe} contentEditable={isEditing}>{props.data.title}</StyledTitle>
 
-                    <DialogContentText onClick={editMe} contentEditable={isEditing}>{props.data.content}</DialogContentText>
+                    <StyledContent onClick={editMe} contentEditable={isEditing}>{props.data.content}</StyledContent>
 
                     {/* <DialogContentText onClick={editMe} contentEditable={isEditing}>{props.idIndexObject}</DialogContentText> */}
 

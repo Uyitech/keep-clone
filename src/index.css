@@ -58,5 +58,8 @@
 .card-box:hover .card-action {
     opacity: 1;
     visibility: visible;
+}
 
+[contenteditable] {
+    outline: 0px solid transparent;
 }

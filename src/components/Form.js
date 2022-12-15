@@ -1,4 +1,3 @@
-import EditNote from './EditNote';
 import React, { useState, useRef } from 'react';
 import { ThemeProvider, useTheme } from '@mui/material/styles';
 import { styled } from '@mui/material/styles';

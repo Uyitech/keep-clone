@@ -13,7 +13,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     ...theme.mixins.toolbar,
 }));
 
-function Main(note) {
+function Main(props) {
 
     // let note = props.notes
     // const cars = props.cars;
@@ -23,7 +23,7 @@ function Main(note) {
             <DrawerHeader />
             <Form />
 
-            {note?.length > 0 ?
+            {props.note?.length > 0 ?
                 <Container maxWidth={false}>
                     <Box mt={8}>
                         <NoteBox />
@@ -36,12 +36,6 @@ function Main(note) {
                     </Box>
                 </Container>
             }
-
-            {/* {cars.length > 0 &&
-                <h2>
-                    You have {cars.length} cars in your garage.
-                </h2>
-            } */}
 
         </Box>
     )

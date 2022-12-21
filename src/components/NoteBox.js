@@ -1,32 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../firebase/firebase';
 import Bricks from 'bricks.js'
-// import EditNote from './EditNote';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import Tooltip from '@mui/material/Tooltip';
-import Snackbar from '@mui/material/Snackbar';
 import RedoIcon from '@mui/icons-material/Redo';
 import UndoIcon from '@mui/icons-material/Undo';
 import CloseIcon from '@mui/icons-material/Close';
-import IconButton from '@mui/material/IconButton';
-import DialogTitle from '@mui/material/DialogTitle';
-import { styled, useTheme, Stack } from '@mui/material';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
+import { styled, useTheme, Stack, TextField } from '@mui/material';
 import PaletteOutlinedIcon from '@mui/icons-material/PaletteOutlined';
 import AddAlertOutlinedIcon from '@mui/icons-material/AddAlertOutlined';
+import { Tooltip, Dialog, Button, Snackbar, IconButton } from '@mui/material';
 import PersonAddAlt1OutlinedIcon from '@mui/icons-material/PersonAddAlt1Outlined';
 import { Card, CardContent, CardActions, CardMedia, Typography, Box } from '@mui/material';
-import { doc, collection, orderBy, query, deleteDoc, onSnapshot } from "firebase/firestore";
 import { ArchiveOutlined as Archive, DeleteOutlineOutlined as Delete } from '@mui/icons-material';
+import { doc, collection, orderBy, query, deleteDoc, onSnapshot, updateDoc } from "firebase/firestore";
+
+import { useParams } from 'react-router-dom'
+
 
 
 const StyledCard = styled(Card)(({ theme }) => ({
     width: '240px',
     display: "flex",
+    boxShadow: 'none',
     background: 'none',
     borderRadius: '6px',
     borderStyle: "solid",
@@ -41,21 +38,24 @@ const StyledCard = styled(Card)(({ theme }) => ({
 }))
 
 const Title = styled(Typography)(({ theme }) => ({
-    fontSize: '1rem',
-    fontWeight: 500,
+    fontWeight: 400,
     minHeight: '38px',
+    fontSize: '1.1rem',
     paddingTop: '12px',
     lineHeight: '1.5rem',
     wordBreak: 'break-word',
     letterSpacing: '.00625em',
-    padding: '16px 16px 0 16px'
+    padding: '16px 16px 4px 16px',
 }))
 
 const Content = styled(Typography)(({ theme }) => ({
     fontWeight: 400,
+    overflow: 'hidden',
     fontSize: '.875rem',
+    whiteSpace: 'normal',
+    display: '-webkit-box',
     wordBreak: 'break-word',
-    padding: '4px 16px 12px 16px',
+    margin: '5px 16px',
 }))
 
 const StyledButton = styled(IconButton)(({ theme }) => ({
@@ -75,6 +75,7 @@ const NoteButton = styled(Button)(({ theme }) => ({
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialog-paper': {
+        width: '600px',
         borderRadius: '8px',
         overflowX: 'hidden',
         borderStyle: "solid",
@@ -84,21 +85,24 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
     }
 }));
 
-const StyledTitle = styled(DialogTitle)(({ theme }) => ({
-    color: '#e8eaed',
-    letterSpacing: 0,
-    fontWeight: '400',
-    padding: '12px 16px',
-    fontSize: '1.375rem',
-    lineHeight: '1.75rem',
+const StyledTitle = styled(TextField)(({ theme }) => ({
+    padding: '10px 16px',
+    '& .MuiInputBase-root': {
+        padding: 0,
+        letterSpacing: 0,
+        fontWeight: '400',
+        fontSize: '1.450rem',
+        lineHeight: '1.75rem',
+        color: `${theme.palette.custom.dialogText}`,
+    }
 }))
 
-const StyledContent = styled(DialogContentText)(({ theme }) => ({
-    color: '#e8eaed',
+const StyledContent = styled(TextField)(({ theme }) => ({
     fontSize: '1rem',
     fontWeight: '400',
     letterSpacing: '.00625em',
-    padding: '0px 16px 12px 16px',
+    padding: '0px 16px 16px 16px',
+    color: `${theme.palette.custom.dialogText}`,
 }))
 
 // const TimeStamp = styled(Typography)(({ theme }) => ({
@@ -112,16 +116,18 @@ const StyledContent = styled(DialogContentText)(({ theme }) => ({
 
 export default function NoteBox() {
     const [notes, setNotes] = useState([])
-    const [currentNote, setCurrentNote] = useState([])
     const [open, setOpen] = React.useState(false);
-    const [snackBar, setSnackBar] = useState(false);
+    const [snackBar, setSnackBar] = useState(false)
+    const [currentNote, setCurrentNote] = useState([])
 
 
     const handleClickOpen = (openedNote) => {
         setOpen(true);
         setCurrentNote(openedNote);
     };
-    const handleClose = () => { setOpen(false); };
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     const fetchPost = () => {
         const collRef = (query(collection(db, "notes"), orderBy("time", "desc")));
@@ -142,6 +148,7 @@ export default function NoteBox() {
         deleteDoc(doc(db, "notes", notes))
             .then(() => {
                 console.log("Document successfully deleted!");
+                // console.log(notes)
                 setSnackBar(true)
             }).catch((error) => {
                 console.error("Error removing document: ", error);
@@ -193,12 +200,14 @@ export default function NoteBox() {
         <>
             <Box className='container'>
                 {notes?.map((note) => {
+                    // console.log(note.id)
                     return (
                         <StyledCard key={note.id} className="card-box">
                             <CardContent sx={{ p: 0 }} onClick={() => handleClickOpen(note)}>
                                 <CardMedia image={note.image} component="img" alt={note.image} />
                                 <Title>{note.title}</Title>
-                                <Content>{note.content}</Content>
+                                <Content className='content'>{note.content}</Content>
+                                {/* <TimeStamp sx={{ fontSize: 10 }}>Created at: {note.time.toDate().toDateString()}</TimeStamp> */}
                             </CardContent>
                             <CardActions className="card-action">
 
@@ -259,7 +268,6 @@ export default function NoteBox() {
                 onClose={closeSnackbar}
                 autoHideDuration={6000}
             />
-
         </>
     )
 }
@@ -267,98 +275,143 @@ export default function NoteBox() {
 
 function EditNote(props) {
     const theme = useTheme();
-    const [isEditing, setIsEditing] = useState(false);
-
-    const editMe = () => { setIsEditing(true); }
+    const { id } = useParams()
+    const [title, setTitle] = useState("");
+    const [content, setContent] = useState("");
 
     const { onClose, open } = props;
-    const handleClose = () => { onClose(); };
 
+    const handleClose = () => {
+        onClose();
+    };
+
+    console.log(props.data.id)
+
+    const update = async () => {
+
+        try {
+            const updateMe = doc(db, "notes", props.data.id)
+            await updateDoc(updateMe, {
+                title: title,
+                content: content
+            })
+            console.log("Document updated with ID: ", id);
+            handleClose();
+        } catch (error) {
+            console.log('Error updating the document:', error);
+            handleClose()
+        }
+    }
 
     return (
-        <div className="overRallDialog">
-            <StyledDialog onClose={handleClose} open={open}>
+        <StyledDialog onClose={handleClose} open={open}>
+            <DialogContent sx={{ padding: 0 }} className="secondDialog">
 
+                <CardMedia
+                    component="img"
+                    alt={props.data.image}
+                    image={props.data.image}
+                    sx={{ padding: 0, wordBreak: 'break-all', overflow: 'hidden' }}
+                />
 
-                <DialogContent sx={{ padding: 0 }} className="secondDialog">
+                <StyledTitle
+                    multiline
+                    name='text'
+                    maxRows={Infinity}
+                    variant="standard"
+                    placeholder="Title"
+                    sx={{ width: '100%' }}
+                    defaultValue={props.data.title}
+                    InputProps={{ disableUnderline: true }}
+                    onChange={(e) => setTitle(e.target.value)}
+                />
 
-                    <CardMedia image={props.data.image} component="img" alt={props.data.image} sx={{ padding: 0 }} />
+                <StyledContent
+                    multiline
+                    name='text'
+                    maxRows={Infinity}
+                    variant="standard"
+                    placeholder="Note"
+                    sx={{ width: '100%' }}
+                    defaultValue={props.data.content}
+                    InputProps={{ disableUnderline: true }}
+                    onChange={(e) => setContent(e.target.value)}
+                />
 
-                    <StyledTitle onClick={editMe} contentEditable={isEditing}>{props.data.title}</StyledTitle>
+                {/* <DialogContentText>{props.data.time[toDate().toDateString()]}</DialogContentText> */}
 
-                    <StyledContent onClick={editMe} contentEditable={isEditing}>{props.data.content}</StyledContent>
+            </DialogContent>
 
-                    {/* <DialogContentText onClick={editMe} contentEditable={isEditing}>{props.idIndexObject}</DialogContentText> */}
+            <DialogActions disableSpacing sx={{ flex: '1 0 auto', padding: '4px 15px 4px 15px', boxShadow: '0 -2px 5px rgb(0 0 0 / 20%)' }} >
 
-                </DialogContent>
-                <DialogActions disableSpacing sx={{ flex: '1 0 auto', padding: '4px 15px 4px 15px', boxShadow: '0 -2px 5px rgb(0 0 0 / 20%)' }} >
+                <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
+                    <Tooltip title="Remind me" arrow followCursor>
+                        <StyledButton size="small" sx={{ cursor: 'no-drop', opacity: 0.4 }}>
+                            <AddAlertOutlinedIcon sx={{ fontSize: "19px" }} />
+                        </StyledButton >
+                    </Tooltip>
+                </Box>
 
-                    <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
-                        <Tooltip title="Remind me" arrow followCursor>
-                            <StyledButton size="small" sx={{ cursor: 'no-drop', opacity: 0.4 }}>
-                                <AddAlertOutlinedIcon sx={{ fontSize: "19px" }} />
-                            </StyledButton >
-                        </Tooltip>
-                    </Box>
+                <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
+                    <Tooltip title="Collaborator" arrow followCursor>
+                        <StyledButton size="small" sx={{ cursor: 'no-drop', opacity: 0.4 }}>
+                            <PersonAddAlt1OutlinedIcon sx={{ fontSize: "19px" }} />
+                        </StyledButton >
+                    </Tooltip>
+                </Box>
 
-                    <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
-                        <Tooltip title="Collaborator" arrow followCursor>
-                            <StyledButton size="small" sx={{ cursor: 'no-drop', opacity: 0.4 }}>
-                                <PersonAddAlt1OutlinedIcon sx={{ fontSize: "19px" }} />
-                            </StyledButton >
-                        </Tooltip>
-                    </Box>
+                <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
+                    <Tooltip title="Background options" arrow followCursor>
+                        <StyledButton size="small">
+                            <PaletteOutlinedIcon sx={{ fontSize: "19px" }} />
+                        </StyledButton>
+                    </Tooltip>
+                </Box>
 
-                    <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
-                        <Tooltip title="Background options" arrow followCursor>
-                            <StyledButton size="small" onClick="">
-                                <PaletteOutlinedIcon sx={{ fontSize: "19px" }} />
-                            </StyledButton>
-                        </Tooltip>
-                    </Box>
+                <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
+                    <Tooltip title="Add Image" arrow followCursor>
+                        <StyledButton size="small">
+                            <ImageOutlinedIcon sx={{ fontSize: "19px" }} />
+                        </StyledButton>
+                    </Tooltip>
+                </Box>
 
-                    <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
-                        <Tooltip title="Add Image" arrow followCursor>
-                            <StyledButton size="small" onClick="">
-                                <ImageOutlinedIcon sx={{ fontSize: "19px" }} />
-                            </StyledButton>
-                        </Tooltip>
-                    </Box>
+                <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
+                    <Tooltip title="Archive" arrow followCursor>
+                        <StyledButton size="small" sx={{ cursor: 'no-drop', opacity: 0.4 }}>
+                            <Archive sx={{ fontSize: "19px" }} />
+                        </StyledButton>
+                    </Tooltip>
+                </Box>
 
-                    <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
-                        <Tooltip title="Archive" arrow followCursor>
-                            <StyledButton size="small" sx={{ cursor: 'no-drop', opacity: 0.4 }}>
-                                <Archive sx={{ fontSize: "19px" }} />
-                            </StyledButton>
-                        </Tooltip>
-                    </Box>
+                <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
+                    <Tooltip title="Undo" arrow followCursor>
+                        <StyledButton size="small" sx={{ cursor: 'no-drop', opacity: 0.4 }}>
+                            <UndoIcon sx={{ fontSize: "19px" }} />
+                        </StyledButton>
+                    </Tooltip>
+                </Box>
 
-                    <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
-                        <Tooltip title="Undo" arrow followCursor>
-                            <StyledButton size="small" sx={{ cursor: 'no-drop', opacity: 0.4 }}>
-                                <UndoIcon sx={{ fontSize: "19px" }} />
-                            </StyledButton>
-                        </Tooltip>
-                    </Box>
+                <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
+                    <Tooltip title="Redo" arrow followCursor>
+                        <StyledButton size="small" sx={{ cursor: 'no-drop', opacity: 0.4 }}>
+                            <RedoIcon sx={{ fontSize: "19px" }} />
+                        </StyledButton>
+                    </Tooltip>
+                </Box>
 
-                    <Box sx={{ padding: theme.spacing(0, 1.875, 0, 0) }}>
-                        <Tooltip title="Redo" arrow followCursor>
-                            <StyledButton size="small" sx={{ cursor: 'no-drop', opacity: 0.4 }}>
-                                <RedoIcon sx={{ fontSize: "19px" }} />
-                            </StyledButton>
-                        </Tooltip>
-                    </Box>
+                <Box sx={{ flexGrow: 1 }} />
 
-                    <Box sx={{ flexGrow: 1 }} />
+                <Stack spacing={1} direction="row">
+                    <NoteButton variant="text" onClick={update}>
+                        Update
+                    </NoteButton>
+                    <NoteButton variant="text" onClick={handleClose}>
+                        Close
+                    </NoteButton>
+                </Stack>
+            </DialogActions>
 
-                    <Stack direction="row">
-                        <NoteButton variant="text" onClick={handleClose}>
-                            Close
-                        </NoteButton>
-                    </Stack>
-                </DialogActions>
-
-            </StyledDialog>
-        </div>
+        </StyledDialog>
     );
 }

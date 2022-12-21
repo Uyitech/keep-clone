@@ -30,9 +30,10 @@ const darkTheme = createTheme({
             light: "#8d8d8d"
         },
         custom: {
+            border: "#fff",
             iconColor: "#fff",
             iconOpacity: "0.75",
-            border: "#fff"
+            dialogText: "#e8eaed",
         },
         noteBg: {
             default: "",
@@ -81,9 +82,10 @@ const lightTheme = createTheme({
             light: "#dddddd"
         },
         custom: {
-            iconColor: "#202124",
+            border: "#000",
             iconOpacity: "0.75",
-            border: "#000"
+            iconColor: "#202124",
+            dialogText: "#202124",
         },
         noteBg: {
             default: "",

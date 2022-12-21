@@ -1,5 +1,4 @@
 import React, { useState, useRef } from 'react';
-import { ThemeProvider, useTheme } from '@mui/material/styles';
 import { styled } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import RedoIcon from '@mui/icons-material/Redo';
@@ -8,13 +7,13 @@ import IconButton from '@mui/material/IconButton';
 import CardActions from '@mui/material/CardActions';
 import { Popover, CardMedia, Stack } from '@mui/material';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
+import { ThemeProvider, useTheme } from '@mui/material/styles';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import PaletteOutlinedIcon from '@mui/icons-material/PaletteOutlined';
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
-import { Box, TextField, ClickAwayListener, Button } from '@mui/material';
 import AddAlertOutlinedIcon from '@mui/icons-material/AddAlertOutlined';
+import { Box, TextField, ClickAwayListener, Button } from '@mui/material';
 import PersonAddAlt1OutlinedIcon from '@mui/icons-material/PersonAddAlt1Outlined';
-
 
 import { db } from '../firebase/firebase';
 import { storage } from "../firebase/firebase";
@@ -84,7 +83,6 @@ function Form() {
         setTitle("")
         setContent("")
         setShowTextField(false);
-        containerRef.current.style.minheight = '30px'
     }
 
     const closeForm = () => {
@@ -115,8 +113,8 @@ function Form() {
                 try {
                     const docRef = await addDoc(collection(db, "notes"), {
                         title: title,
-                        content: content,
                         image: imgUrl,
+                        content: content,
                         time: serverTimestamp(),
                     });
                     console.log("Document written with ID: ", docRef.id);
@@ -186,7 +184,7 @@ function Form() {
                     maxRows={Infinity}
                     variant="standard"
                     onClick={onTextAreaClick}
-                    placeholder="Take a note..."
+                    placeholder="Take a note.."
                     sx={{ padding: '5.5px 15px', }}
                     InputProps={{ disableUnderline: true }}
                     onChange={(e) => setContent(e.target.value)}

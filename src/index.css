@@ -9,9 +9,9 @@
 
 /* Chrome, Edge, and Safari */
 *::-webkit-scrollbar {
+    width: 14px;
     height: 16px;
     overflow: visible;
-    width: 16px;
 }
 
 *::-webkit-scrollbar-track {
@@ -19,17 +19,17 @@
 }
 
 *::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, .3);
-    background-clip: padding-box;
     border: solid transparent;
-    border-width: 1px 1px 1px 6px;
+    background-clip: padding-box;
+    border-width: 1px 1px 1px 3px;
+    background-color: rgba(255, 255, 255, .3);
     box-shadow: inset 1px 1px 0 rgb(0 0 0 / 10%), inset 0 -1px 0 rgb(0 0 0 / 7%);
 }
 
 *::-webkit-scrollbar-track {
-    background-clip: padding-box;
-    border: solid transparent;
     border-width: 0 0 0 4px;
+    border: solid transparent;
+    background-clip: padding-box;
 }
 
 .logo {
@@ -62,4 +62,13 @@
 
 [contenteditable] {
     outline: 0px solid transparent;
+}
+
+[contentEditable=true]:empty:before {
+    content: attr(data-text);
+}
+
+.content {
+    -webkit-line-clamp: 15;
+    -webkit-box-orient: vertical;
 }
